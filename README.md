@@ -7,7 +7,7 @@
 
 ---
 
-### Instructions for My Vagrant LAMP Stack Project
+### Installation Instructions
 
 #### Step 1: Satisfy Software Requirements
 
