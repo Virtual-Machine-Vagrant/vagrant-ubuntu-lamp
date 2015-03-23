@@ -43,7 +43,7 @@ $ vagrant up # Boot-up the Box with LAMP ready-to-go!
 
 #### Step 5: Add Files to: `~/Projects/vagrant-ubuntu-lamp/htdocs/`
 
-The is the web root. Add your application files. e.g., WordPress, Drupal, Joomla, or any other PHP software.
+The is the web root. Add your application files. e.g., WordPress, Drupal, Joomla, etc.
 
 #### Step 6: Learn to Use the Tools That I've Bundled
 
@@ -53,7 +53,8 @@ A username/password is required to access each of these tools. It is always the 
 
 Available Tools (Using Any of These is Optional):
 
-- <https://ubuntu-lamp.vm/tools/pma> PhpMyAdmin (DB name: `vagrant`, DB username: `vagrant`, DB password: `vagrant`).
+- <https://ubuntu-lamp.vm/tools/pma> PhpMyAdmin
+  DB name: `vagrant`, DB username: `vagrant`, DB password: `vagrant`
 - <https://ubuntu-lamp.vm/tools/opcache> PHP OPCache extension status and management page.
 - <https://ubuntu-lamp.vm/tools/php.php> PHP info (i.e., `phpinfo()`) page.
 - <https://ubuntu-lamp.vm/tools/php5-fpm-status/> PHP5-FPM status page.
