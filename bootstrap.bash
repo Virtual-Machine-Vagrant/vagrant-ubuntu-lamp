@@ -83,7 +83,15 @@ a2enmod status;
 a2enmod access_compat;
 
 mkdir --parents /var/vagrant/cgi-bin;
-echo 'export HOST_NAME="'"$HOST_NAME"'"'>> /etc/apache2/envvars;
+
+chown --recursive vagrant:www-data /var/lock/apache2;
+chown --recursive vagrant:www-data /var/lib/apache2/fastcgi;
+chown --recursive vagrant:www-data /var/cache/apache2/mod_cache_disk;
+
+echo 'export HOST_NAME="'"$HOST_NAME"'"' >> /etc/apache2/envvars;
+echo 'export APACHE_RUN_USER="'"'vagrant'"'"' >> /etc/apache2/envvars;
+echo 'export APACHE_RUN_GROUP="'"'vagrant'"'"' >> /etc/apache2/envvars;
+
 ln --symbolic /vagrant/assets/apache/.conf /etc/apache2/conf-enabled/z90.conf;
 sed --in-place 's/^\s*SSLProtocol all\s*$/SSLProtocol all -SSLv2 -SSLv3/I' /etc/apache2/mods-enabled/ssl.conf;
 
