@@ -53,7 +53,7 @@ A username/password is required to access each of these tools. It is always the 
 
 Available Tools (Using Any of These is Optional):
 
-- <https://ubuntu-lamp.vm/tools/pma> PhpMyAdmin
+- <https://ubuntu-lamp.vm/tools/pma> PhpMyAdmin  
   DB name: `vagrant`, DB username: `vagrant`, DB password: `vagrant`
 - <https://ubuntu-lamp.vm/tools/opcache> PHP OPCache extension status and management page.
 - <https://ubuntu-lamp.vm/tools/php.php> PHP info (i.e., `phpinfo()`) page.
