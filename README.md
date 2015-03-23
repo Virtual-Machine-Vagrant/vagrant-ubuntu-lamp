@@ -1,6 +1,6 @@
 ## VirtualBox + Vagrant + Landrush; running Ubuntu 14.04 LTS w/ a full LAMP stack. Includes a full tutorial!
 
-- See full tutorial: <http://jaswsinc.com/vagrant-ubuntu-lamp/#-lamp>
+- See full tutorial: <http://jaswsinc.com/vagrant-ubuntu-lamp/>
 
 ---
 
@@ -8,7 +8,7 @@
 
 #### Step 1: Satisfy Software Requirements
 
-You need to have VirtualBox, Vagrant, and Landrush installed. You can use the instructions from this article.
+You need to have VirtualBox, Vagrant, and Landrush installed. See [full tutorial](http://jaswsinc.com/vagrant-ubuntu-lamp/).
 
 ```bash
 $ brew cask install virtualbox
@@ -16,7 +16,7 @@ $ brew cask install vagrant
 $ vagrant plugin install landrush
 ```
 
-You need to install the `ubuntu/trusty64` Box. You can follow the instructions from this article.
+You need to install the `ubuntu/trusty64` Box. See [full tutorial](http://jaswsinc.com/vagrant-ubuntu-lamp/).
 
 ```bash
 $ vagrant box add ubuntu/trusty64
