@@ -1,7 +1,6 @@
 ## VirtualBox + Vagrant + Landrush; running Ubuntu 14.04 LTS w/ a full LAMP stack. Includes a tutorial!
 
 - See full tutorial: <http://jaswsinc.com/vagrant-ubuntu-lamp/>
-- Instructions specifically for this package: <http://jaswsinc.com/vagrant-ubuntu-lamp/#-lamp>
 
 ![](http://cdn.websharks-inc.com/jaswsinc/uploads/2015/03/os-x-vagrant-virtualbox.png?v=1)
 
