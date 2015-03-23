@@ -84,3 +84,19 @@ In the project directory you'll find `bootstrap.bash`. At the top there are some
 ```bash
 $ vagrant up # Bring it back up after you are done customizing.
 ```
+
+---
+
+### Hostname Tips & Tricks
+
+By default, the hostname will be: `http://ubuntu-lamp.vm`. You can change this by editing `config.vm.hostname` in `Vagrantfile`.
+
+However, you can avoid the extra step associated with the hostname altogether. Clone this repo into a directory that uses a `.vm` suffix. A quick look at `Vagrantfile` and you'll see that if your directory ends with `.vm` we use the directory basename as the VM hostname. Nice!
+
+For instance, I could run through the following steps and end up with `http://my.vm` and `https://my.vm` automatically.
+
+```bash
+$ git clone https://github.com/jaswsinc/vagrant-ubuntu-lamp my.vm # Cloning into a new `my.vm` directory.
+$ cd my.vm && vagrant up # Enter the directory and Vagrant up!
+# Now visit: `http://my.vm`
+```
