@@ -1,0 +1,65 @@
+; See: <http://www.prelovac.com/vladimir/wordpress-optimization-guide>
+; See: <https://dev.mysql.com/doc/refman/5.5/en/server-system-variables.html>
+; See: <http://www.percona.com/files/presentations/MySQL_Query_Cache.pdf>
+; See: <https://rtcamp.com/tutorials/mysql/query-cache/>
+; See: <https://tools.percona.com/wizard>
+
+; The following is based on recommendations from Percona.
+
+[mysqld]
+
+# GENERAL #
+default-storage-engine         = InnoDB
+
+# MyISAM #
+skip-external-locking
+key-buffer-size                = 32M
+myisam-recover-options         = FORCE,BACKUP
+
+# SAFETY #
+skip-name-resolve
+sysdate-is-now                 = 1
+max-allowed-packet             = 16M
+max-connect-errors             = 1000000
+sql-mode                       = STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_AUTO_VALUE_ON_ZERO,NO_ENGINE_SUBSTITUTION,NO_ZERO_DATE,NO_ZERO_IN_DATE,ONLY_FULL_GROUP_BY
+innodb                         = FORCE
+innodb-strict-mode             = 1
+
+# CACHES AND LIMITS #
+tmp-table-size                 = 32M
+max-heap-table-size            = 32M
+query-cache-type               = 0
+query-cache-size               = 0
+max-connections                = 500
+thread-stack                   = 256K
+thread-cache-size              = 50
+open-files-limit               = 65535
+table-definition-cache         = 4096
+table-open-cache               = 4096
+
+# INNODB #
+innodb-flush-method            = O_DIRECT
+innodb-log-files-in-group      = 2
+innodb-log-file-size           = 128M
+innodb-flush-log-at-trx-commit = 1
+innodb-file-per-table          = 1
+
+# INNODB BUFFER POOL (MEMORY CACHE) #
+; This should be roughly 50-75% of available of RAM.
+;innodb-buffer-pool-size        = 128M
+
+# LOGGING #
+long-query-time                = 2
+slow-query-log                 = 1
+log-queries-not-using-indexes  = 1
+slow-query-log-file            = /var/log/mysql/slow.log
+
+# FAIL2BAN NEEDS THIS #
+log-warnings                   = 2
+
+# BINARY LOGGING #
+sync-binlog                    = 1
+expire-logs-days               = 14
+log-bin                        = /var/log/mysql/bin.log
+
+; File cannot end with `;`, so we add this comment line.
