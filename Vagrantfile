@@ -10,6 +10,11 @@ Vagrant.configure(2) do |config|
   config.vm.synced_folder 'htdocs/', '/vagrant-htdocs', owner: 'www-data', group: 'www-data'
   # ↑ Mount a special `/vagrant-htdocs` directory that will be owned by Apache.
 
+  if !File.dirname(__FILE__).scan(/\.vm$/i).empty? # Current project directory ends with a `.vm` suffix?
+    # If your project directory has `.vm` suffix, the hostname is forced to the directory basename.
+    config.vm.hostname = File.basename(File.dirname(__FILE__)); # Directory basename.
+    config.landrush.tld = 'vm' # Set a matching TLD.
+  end
   if File.directory? File.expand_path('~/projects/wordpress') # Mount WordPress projects directory if it exists.
     config.vm.synced_folder File.expand_path('~/projects/wordpress'), '/vagrant-wordpress', mount_options: ['ro']
   end
