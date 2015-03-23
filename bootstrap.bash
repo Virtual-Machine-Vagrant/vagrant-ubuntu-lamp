@@ -21,10 +21,9 @@ commonName=$HOST_NAME
 organizationalUnitName=$HOST_NAME
 emailAddress=vagrant@$HOST_NAME
 ";
-
 # Check if we already ran setup before.
 
-if [ -f /etc/vagrant/complete ]; then
+if [ -f /etc/vagrant/.bootstrap-complete ]; then
 	exit 0; # Nothing more to do here.
 fi; # End conditional check.
 
@@ -32,6 +31,10 @@ fi; # End conditional check.
 
 apt-add-repository multiverse;
 apt-get update; # May take a moment.
+
+# Install utilities.
+
+apt-get install zip unzip --yes;
 
 # Install Apache web server.
 
@@ -161,4 +164,4 @@ service apache2 restart;
 
 # Mark setup as being complete.
 
-echo '.' > /etc/vagrant/complete;
+touch /etc/vagrant/.bootstrap-complete;

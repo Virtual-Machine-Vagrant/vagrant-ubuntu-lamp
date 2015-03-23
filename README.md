@@ -25,11 +25,18 @@ You need to install the `ubuntu/trusty64` Box. See [full tutorial](http://jaswsi
 $ vagrant box add ubuntu/trusty64
 ```
 
-#### Step 2: Clone my GitHub Repo (Ubuntu LAMP Stack)
+#### Step 2: Clone GitHub Repo (Ubuntu LAMP Stack)
 
 ```bash
 $ mkdir ~/Projects && cd ~/Projects
 $ git clone https://github.com/jaswsinc/vagrant-ubuntu-lamp
+```
+
+_**Note:** If you want a specific branch, be sure to checkout that specific branch. For instance, the `wordpress` branch makes things much easier if you're running WordPress. The `master` branch is a base with just a LAMP stack; i.e., no special considerations for any third-party software. You'll want to read: [BRANCHES.md](BRANCHES.md) for more information._
+
+```bash
+$ cd ~/Projects/vagrant-ubuntu-lamp
+git checkout wordpress
 ```
 
 #### Step 3: Vagrant Up!
@@ -41,8 +48,10 @@ $ vagrant up # Boot-up the Box with LAMP ready-to-go!
 
 #### Step 4: Confirm it is Working!
 
-- HTTP: Open <http://ubuntu-lamp.vm>. You should see a `phpinfo()` page.
-- HTTPS: Open <https://ubuntu-lamp.vm>. You should get an SSL security warning. Please bypass this self-signed certificate warning and proceed. You should again see the `phpinfo()` page. SSL is working as expected!
+- Open <http://ubuntu-lamp.vm>. You should see a `phpinfo()` page.
+- Open <https://ubuntu-lamp.vm>. You should get an SSL security warning. Please bypass this self-signed certificate warning and proceed. You should again see the `phpinfo()` page. SSL is working as expected!
+
+_**Note:** If you use something other than the `master` branch in this repo, the default hostname will be different. It will include the branch name; e.g., `http://ubuntu-lamp-wordpress.vm` if you are running the `wordpress` branch._
 
 #### Step 5: Add Files to: `~/Projects/vagrant-ubuntu-lamp/htdocs/`
 
