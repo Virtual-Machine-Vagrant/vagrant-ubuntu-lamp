@@ -91,9 +91,9 @@ $ vagrant up # Bring it back up after you are done customizing.
 
 By default, the hostname will be: `http://ubuntu-lamp.vm`. You can change this by editing `config.vm.hostname` in `Vagrantfile`.
 
-However, you can avoid the extra step associated with the hostname altogether. Clone this repo into a directory that uses a `.vm` suffix. A quick look at `Vagrantfile` and you'll see that if your directory ends with `.vm` we use the directory basename as the VM hostname. Nice!
+_**Note:** If you use something other than the `master` branch in this repo, the default hostname will be different. It will include the branch name; e.g., `http://ubuntu-lamp-wordpress.vm` if you are running the `wordpress` branch._
 
-For instance, I could run through the following steps and end up with `http://my.vm` and `https://my.vm` automatically.
+**However, you can avoid the extra step associated with the hostname altogether.** Clone this repo into a directory that uses a `.vm` suffix. A quick look at `Vagrantfile` and you'll see that if your directory ends with `.vm` I use the directory basename as the VM hostname. For instance, I could run through the following steps and end up with `http://my.vm` and `https://my.vm` automatically.
 
 ```bash
 $ git clone https://github.com/jaswsinc/vagrant-ubuntu-lamp my.vm # Cloning into a new `my.vm` directory.
