@@ -27,7 +27,7 @@ rm -r /tmp/wordpress-latest && rm /tmp/wordpress-latest.zip;
 
 # Configure WordPress using a preset `/wp-config.php` file.
 
-cp --force /vagrant/assets/wordpress/wp-config.php /vagrant-htdocs/wp-config.php;
+cp --force /vagrant/assets/wordpress/.wp-config.php /vagrant-htdocs/wp-config.php;
 
 # Create theme symlinks if possible.
 
