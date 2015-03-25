@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-# Configuration.
+# ---------------------------------------------
+# ---------- Configuration ----------
+# ---------------------------------------------
 
 HOST_NAME="$(hostname)";
 
@@ -21,11 +23,23 @@ commonName=$HOST_NAME
 organizationalUnitName=$HOST_NAME
 emailAddress=vagrant@$HOST_NAME
 ";
-# Check if we already ran setup before.
+# ---------------------------------------------
+# ---------- Check Setup State ----------
+# ---------------------------------------------
 
 if [ -f /etc/vagrant/.bootstrap-complete ]; then
-	exit 0; # Nothing more to do here.
+
+	service mysql restart;
+	service php5-fpm restart;
+	service apache2 restart;
+
+	exit 0; # Nothing more.
+
 fi; # End conditional check.
+
+# ---------------------------------------------
+# ---------- Run Setup Routines ----------
+# ---------------------------------------------
 
 # Update package repositories.
 

@@ -1,10 +1,22 @@
 #!/usr/bin/env bash
 
-# Check if we already ran setup before.
+# ---------------------------------------------
+# ---------- Configuration ----------
+# ---------------------------------------------
+
+# Nothing to configure at this time.
+
+# ---------------------------------------------
+# ---------- Check Setup State ----------
+# ---------------------------------------------
 
 if [ -f /etc/vagrant/.wordpress-complete ]; then
 	exit 0; # Nothing more to do here.
 fi; # End conditional check.
+
+# ---------------------------------------------
+# ---------- Run Setup Routines ----------
+# ---------------------------------------------
 
 # Download and install the latest version of WordPress.
 
@@ -23,6 +35,8 @@ if [ -d /vagrant-wordpress/themes ]; then
 	for dir in /vagrant-wordpress/themes/*/; do
 		if [ -d "$dir"/"$(basename "$dir")" ]; then
 			ln --symbolic "$dir"/"$(basename "$dir")" /vagrant-htdocs/wp-content/themes/"$(basename "$dir")";
+		else # Not in a nested sub-directory; i.e., this is the plugin directory.
+			ln --symbolic "$dir" /vagrant-htdocs/wp-content/themes/"$(basename "$dir")";
 		fi;
 	done;
 fi;
@@ -32,6 +46,8 @@ if [ -d /vagrant-wordpress/plugins ]; then
 	for dir in /vagrant-wordpress/plugins/*/; do
 		if [ -d "$dir"/"$(basename "$dir")" ]; then
 			ln --symbolic "$dir"/"$(basename "$dir")" /vagrant-htdocs/wp-content/plugins/"$(basename "$dir")";
+		else # Not in a nested sub-directory; i.e., this is the theme directory.
+			ln --symbolic "$dir" /vagrant-htdocs/wp-content/plugins/"$(basename "$dir")";
 		fi;
 	done;
 fi;
