@@ -128,6 +128,8 @@ mysql --password="$MYSQL_DB_PASSWORD" --execute="DELETE FROM \`mysql\`.\`user\` 
 mysql --password="$MYSQL_DB_PASSWORD" --execute="DROP DATABASE IF EXISTS \`test\`; DELETE FROM \`mysql\`.\`db\` WHERE \`Db\` = 'test' OR \`Db\` LIKE 'test\\_%';";
 mysql --password="$MYSQL_DB_PASSWORD" --execute="FLUSH PRIVILEGES;";
 
+ln --symbolic /vagrant/assets/apache/tools/.pma.php /vagrant/assets/apache/tools/pma/config.inc.php;
+
 # Install PHP and PHP process manager.
 
 apt-get install php5-cli --yes;

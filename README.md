@@ -28,7 +28,7 @@ $ vagrant box add ubuntu/trusty64
 
 ```bash
 $ mkdir ~/Projects && cd ~/Projects
-$ git clone https://github.com/jaswsinc/vagrant-ubuntu-lamp
+$ git clone --recursive https://github.com/jaswsinc/vagrant-ubuntu-lamp
 ```
 
 _**Note:** If you want a specific branch, be sure to checkout that specific branch. For instance, the `wordpress` branch makes things much easier if you're running WordPress. The `master` branch is a base with just a LAMP stack; i.e., no special considerations for any third-party software. You'll want to read: [BRANCHES.md](BRANCHES.md) for more information._
@@ -96,7 +96,6 @@ _**Note:** If you use something other than the `master` branch in this repo, the
 **However, you can avoid the extra step associated with the hostname altogether.** Clone this repo into a directory that uses a `.vm` suffix. A quick look at `Vagrantfile` and you'll see that if your directory ends with `.vm` I use the directory basename as the VM hostname. For instance, I could run through the following steps and end up with `http://my.vm` and `https://my.vm` automatically.
 
 ```bash
-$ git clone https://github.com/jaswsinc/vagrant-ubuntu-lamp my.vm # Cloning into a new `my.vm` directory.
-$ cd my.vm && vagrant up # Enter the directory and Vagrant up!
-# Now visit: `http://my.vm`
+$ git clone --recursive https://github.com/jaswsinc/vagrant-ubuntu-lamp my.vm
+$ cd my.vm && vagrant up # Now visit: `http://my.vm`
 ```
