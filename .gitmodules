@@ -1,0 +1,3 @@
+[submodule "assets/apache/tools/pma"]
+	path = assets/apache/tools/pma
+	url = https://github.com/phpmyadmin/phpmyadmin
