@@ -27,7 +27,7 @@ emailAddress=vagrant@$HOST_NAME
 # ---------- Check Setup State ----------
 # ---------------------------------------------
 
-if [ -f /etc/vagrant/.bootstrap-complete ]; then
+if [[ -f /etc/vagrant/.bootstrap-complete ]]; then
 
 	service mysql restart;
 	service php5-fpm restart;

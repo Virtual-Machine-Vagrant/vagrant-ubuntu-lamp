@@ -29,28 +29,37 @@ rm -r /tmp/wordpress-latest && rm /tmp/wordpress-latest.zip;
 
 cp --force /vagrant/assets/wordpress/.wp-config.php /vagrant-htdocs/wp-config.php;
 
-# Create theme symlinks if possible.
+# Create theme/plugin symlinks if possible.
 
-if [ -d /vagrant-wordpress/themes ]; then
-	for dir in /vagrant-wordpress/themes/*; do
-		if [[ -d "$dir"/"$(basename "$dir")" ]]; then
-			ln --symbolic "$dir"/"$(basename "$dir")" /vagrant-htdocs/wp-content/themes/"$(basename "$dir")";
-		elif [[ -d "$dir" ]]; then # Not in a nested sub-directory; i.e., this is the theme directory?
-			ln --symbolic "$dir" /vagrant-htdocs/wp-content/themes/"$(basename "$dir")";
-		fi;
-	done;
-fi;
-# Create plugin symlinks if possible.
+for wp_dir in  '/vagrant-wordpress' \
+					'/vagrant-jaswsinc-wordpress' \
+					'/vagrant-websharks-wordpress' ; do
 
-if [ -d /vagrant-wordpress/plugins ]; then
-	for dir in /vagrant-wordpress/plugins/*; do
-		if [[ -d "$dir"/"$(basename "$dir")" ]]; then
-			ln --symbolic "$dir"/"$(basename "$dir")" /vagrant-htdocs/wp-content/plugins/"$(basename "$dir")";
-		elif [[ -d "$dir" ]]; then # Not in a nested sub-directory; i.e., this is the plugin directory?
-			ln --symbolic "$dir" /vagrant-htdocs/wp-content/plugins/"$(basename "$dir")";
-		fi;
-	done;
-fi;
+	# Create theme symlinks if possible.
+
+	if [[ -d "$wp_dir"/themes ]]; then
+		for dir in "$wp_dir"/themes/*; do
+			if [[ -d "$dir"/"$(basename "$dir")" ]]; then
+				ln --symbolic "$dir"/"$(basename "$dir")" /vagrant-htdocs/wp-content/themes/"$(basename "$dir")";
+			elif [[ -d "$dir" ]]; then # Not in a nested sub-directory; i.e., this is the theme directory?
+				ln --symbolic "$dir" /vagrant-htdocs/wp-content/themes/"$(basename "$dir")";
+			fi;
+		done;
+	fi;
+	# Create plugin symlinks if possible.
+
+	if [[ -d "$wp_dir"/plugins ]]; then
+		for dir in "$wp_dir"/plugins/*; do
+			if [[ -d "$dir"/"$(basename "$dir")" ]]; then
+				ln --symbolic "$dir"/"$(basename "$dir")" /vagrant-htdocs/wp-content/plugins/"$(basename "$dir")";
+			elif [[ -d "$dir" ]]; then # Not in a nested sub-directory; i.e., this is the plugin directory?
+				ln --symbolic "$dir" /vagrant-htdocs/wp-content/plugins/"$(basename "$dir")";
+			fi;
+		done;
+	fi;
+
+done; # End WordPress symlinks.
+
 # Mark setup as being complete.
 
 touch /etc/vagrant/.wordpress-complete;
