@@ -32,7 +32,7 @@ cp --force /vagrant/assets/wordpress/.wp-config.php /vagrant-htdocs/wp-config.ph
 # Create theme symlinks if possible.
 
 if [ -d /vagrant-wordpress/themes ]; then
-	for dir in /vagrant-wordpress/themes/*/; do
+	for dir in "$(ls --directory /vagrant-wordpress/themes/*)"; do
 		if [ -d "$dir"/"$(basename "$dir")" ]; then
 			ln --symbolic "$dir"/"$(basename "$dir")" /vagrant-htdocs/wp-content/themes/"$(basename "$dir")";
 		else # Not in a nested sub-directory; i.e., this is the plugin directory.
@@ -43,7 +43,7 @@ fi;
 # Create plugin symlinks if possible.
 
 if [ -d /vagrant-wordpress/plugins ]; then
-	for dir in /vagrant-wordpress/plugins/*/; do
+	for dir in "$(ls --directory /vagrant-wordpress/plugins/*)"; do
 		if [ -d "$dir"/"$(basename "$dir")" ]; then
 			ln --symbolic "$dir"/"$(basename "$dir")" /vagrant-htdocs/wp-content/plugins/"$(basename "$dir")";
 		else # Not in a nested sub-directory; i.e., this is the theme directory.
