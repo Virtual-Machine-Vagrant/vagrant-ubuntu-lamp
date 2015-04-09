@@ -10,7 +10,7 @@
 # ---------- Check Setup State ----------
 # ---------------------------------------------
 
-if [ -f /etc/vagrant/.wordpress-complete ]; then
+if [[ -f /etc/vagrant/.wordpress-complete ]]; then
 	exit 0; # Nothing more to do here.
 fi; # End conditional check.
 
@@ -32,10 +32,10 @@ cp --force /vagrant/assets/wordpress/.wp-config.php /vagrant-htdocs/wp-config.ph
 # Create theme symlinks if possible.
 
 if [ -d /vagrant-wordpress/themes ]; then
-	for dir in "$(ls --directory /vagrant-wordpress/themes/*)"; do
-		if [ -d "$dir"/"$(basename "$dir")" ]; then
+	for dir in /vagrant-wordpress/themes/*; do
+		if [[ -d "$dir"/"$(basename "$dir")" ]]; then
 			ln --symbolic "$dir"/"$(basename "$dir")" /vagrant-htdocs/wp-content/themes/"$(basename "$dir")";
-		else # Not in a nested sub-directory; i.e., this is the plugin directory.
+		elif [[ -d "$dir" ]]; then # Not in a nested sub-directory; i.e., this is the theme directory?
 			ln --symbolic "$dir" /vagrant-htdocs/wp-content/themes/"$(basename "$dir")";
 		fi;
 	done;
@@ -43,10 +43,10 @@ fi;
 # Create plugin symlinks if possible.
 
 if [ -d /vagrant-wordpress/plugins ]; then
-	for dir in "$(ls --directory /vagrant-wordpress/plugins/*)"; do
-		if [ -d "$dir"/"$(basename "$dir")" ]; then
+	for dir in /vagrant-wordpress/plugins/*; do
+		if [[ -d "$dir"/"$(basename "$dir")" ]]; then
 			ln --symbolic "$dir"/"$(basename "$dir")" /vagrant-htdocs/wp-content/plugins/"$(basename "$dir")";
-		else # Not in a nested sub-directory; i.e., this is the theme directory.
+		elif [[ -d "$dir" ]]; then # Not in a nested sub-directory; i.e., this is the plugin directory?
 			ln --symbolic "$dir" /vagrant-htdocs/wp-content/plugins/"$(basename "$dir")";
 		fi;
 	done;
