@@ -1,4 +1,6 @@
 <?php
+define('WP_ALLOW_MULTISITE', true);
+
 /**
  * The base configurations of the WordPress.
  *
@@ -68,7 +70,9 @@ $table_prefix  = 'wp_';
  * It is strongly recommended that plugin and theme developers use WP_DEBUG
  * in their development environments.
  */
-define('WP_DEBUG', TRUE);
+define('WP_DEBUG', true);
+define('WP_DEBUG_LOG', true);
+define('WP_DEBUG_DISPLAY', true);
 
 /* That's all, stop editing! Happy blogging. */
 
