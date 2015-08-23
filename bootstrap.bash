@@ -51,6 +51,7 @@ apt-get update; # May take a moment.
 apt-get install cmake --yes;
 apt-get install zip unzip --yes;
 apt-get install git --yes;
+apt-get install apache2-utils --yes;
 
 # Global environment variables.
 
@@ -67,10 +68,14 @@ openssl genrsa -out /etc/vagrant/ssl/.key 2048;
 openssl req -new -subj "$(echo -n "$SSL_CSR_INFO" | tr "\n" "/")" -key /etc/vagrant/ssl/.key -out /etc/vagrant/ssl/.csr -passin pass:'';
 openssl x509 -req -days 365 -in /etc/vagrant/ssl/.csr -signkey /etc/vagrant/ssl/.key -out /etc/vagrant/ssl/.crt;
 
+# Generate user/pass for web-based tools.
+
+mkdir --parents /etc/vagrant/passwds;
+htpasswd -cb /etc/vagrant/passwds/.tools "$TOOLS_USER" "$TOOLS_PASSWORD";
+
 # Install Apache web server.
 
 apt-get install apache2 --yes;
-apt-get install apache2-utils --yes;
 apt-get install libapache2-mod-fastcgi --yes;
 
 # Configure Apache web server.
@@ -120,9 +125,6 @@ mkdir --parents /var/vagrant/cgi-bin;
 echo 'export HOST_NAME="'"$HOST_NAME"'"' >> /etc/apache2/envvars;
 ln --symbolic /vagrant/assets/apache/.conf /etc/apache2/conf-enabled/z90.conf;
 sed --in-place 's/^\s*SSLProtocol all\s*$/SSLProtocol all -SSLv2 -SSLv3/I' /etc/apache2/mods-enabled/ssl.conf;
-
-mkdir --parents /etc/vagrant/passwds;
-htpasswd -cb /etc/vagrant/passwds/.tools "$TOOLS_USER" "$TOOLS_PASSWORD";
 
 # Install MySQL database server.
 
