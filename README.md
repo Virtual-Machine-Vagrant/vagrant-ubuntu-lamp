@@ -18,10 +18,10 @@ $ brew cask install vagrant
 $ vagrant plugin install landrush
 ```
 
-You need to install the `ubuntu/trusty64` Box. See [full tutorial](http://jaswsinc.com/vagrant-ubuntu-lamp/).
+You need to install the `ubuntu/vivid64` Box. See [full tutorial](http://jaswsinc.com/vagrant-ubuntu-lamp/).
 
 ```bash
-$ vagrant box add ubuntu/trusty64
+$ vagrant box add ubuntu/vivid64
 ```
 
 #### Step 2: Clone GitHub Repo (Ubuntu LAMP Stack)
