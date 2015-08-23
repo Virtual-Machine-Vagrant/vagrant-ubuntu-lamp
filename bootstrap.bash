@@ -49,6 +49,22 @@ apt-get update; # May take a moment.
 # Install utilities.
 
 apt-get install zip unzip --yes;
+apt-get install git --yes;
+
+# Global environment variables.
+
+echo "MYSQL_DB_HOST='localhost'" >> /etc/environment \
+  && echo "MYSQL_DB_NAME='$MYSQL_DB_NAME'" >> /etc/environment \
+  && echo "MYSQL_DB_USER='$MYSQL_DB_USER'" >> /etc/environment \
+  && echo "MYSQL_DB_PASSWORD='$MYSQL_DB_PASSWORD'" >> /etc/environment \
+  && echo "TOOLS_PMA_BLOWFISH_KEY='$TOOLS_PMA_BLOWFISH_KEY'" >> /etc/environment;
+
+# Generate SSL certificate.
+
+mkdir --parents /etc/vagrant/ssl;
+openssl genrsa -out /etc/vagrant/ssl/.key 2048;
+openssl req -new -subj "$(echo -n "$SSL_CSR_INFO" | tr "\n" "/")" -key /etc/vagrant/ssl/.key -out /etc/vagrant/ssl/.csr -passin pass:'';
+openssl x509 -req -days 365 -in /etc/vagrant/ssl/.csr -signkey /etc/vagrant/ssl/.key -out /etc/vagrant/ssl/.crt;
 
 # Install Apache web server.
 
@@ -104,10 +120,8 @@ echo 'export HOST_NAME="'"$HOST_NAME"'"' >> /etc/apache2/envvars;
 ln --symbolic /vagrant/assets/apache/.conf /etc/apache2/conf-enabled/z90.conf;
 sed --in-place 's/^\s*SSLProtocol all\s*$/SSLProtocol all -SSLv2 -SSLv3/I' /etc/apache2/mods-enabled/ssl.conf;
 
-mkdir --parents /etc/vagrant/ssl;
-openssl genrsa -out /etc/vagrant/ssl/.key 2048;
-openssl req -new -subj "$(echo -n "$SSL_CSR_INFO" | tr "\n" "/")" -key /etc/vagrant/ssl/.key -out /etc/vagrant/ssl/.csr -passin pass:'';
-openssl x509 -req -days 365 -in /etc/vagrant/ssl/.csr -signkey /etc/vagrant/ssl/.key -out /etc/vagrant/ssl/.crt;
+mkdir --parents /etc/vagrant/passwds;
+htpasswd -cb /etc/vagrant/passwds/.tools "$TOOLS_USER" "$TOOLS_PASSWORD";
 
 # Install MySQL database server.
 
@@ -158,19 +172,6 @@ echo '[www]' >> /etc/php5/fpm/pool.d/env.conf \
   && echo "env[MYSQL_DB_USER] = '$MYSQL_DB_USER'" >> /etc/php5/fpm/pool.d/env.conf \
   && echo "env[MYSQL_DB_PASSWORD] = '$MYSQL_DB_PASSWORD'" >> /etc/php5/fpm/pool.d/env.conf \
   && echo "env[TOOLS_PMA_BLOWFISH_KEY] = '$TOOLS_PMA_BLOWFISH_KEY'" >> /etc/php5/fpm/pool.d/env.conf;
-
-# Create password file for web-based tools.
-
-mkdir --parents /etc/vagrant/passwds;
-htpasswd -cb /etc/vagrant/passwds/.tools "$TOOLS_USER" "$TOOLS_PASSWORD";
-
-# Global environment variables.
-
-echo "MYSQL_DB_HOST='localhost'" >> /etc/environment \
-  && echo "MYSQL_DB_NAME='$MYSQL_DB_NAME'" >> /etc/environment \
-  && echo "MYSQL_DB_USER='$MYSQL_DB_USER'" >> /etc/environment \
-  && echo "MYSQL_DB_PASSWORD='$MYSQL_DB_PASSWORD'" >> /etc/environment \
-  && echo "TOOLS_PMA_BLOWFISH_KEY='$TOOLS_PMA_BLOWFISH_KEY'" >> /etc/environment;
 
 # Restart services.
 
