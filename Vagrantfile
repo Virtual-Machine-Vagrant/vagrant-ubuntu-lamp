@@ -5,7 +5,7 @@ Vagrant.configure(2) do |config|
   # ↑ Tell Vagrant to run these scripts as part of the provisioning process.
 
   config.landrush.enabled = true # Enable the Landrush plugin.
-  config.vm.hostname = 'ubuntu-lamp-wordpress.vm'; # Force host name.
+  config.vm.hostname = 'ubuntu-lamp.vm'; # Hard-coded default host name.
   config.landrush.tld = 'vm' # Set a matching custom TLD to use for this VM.
 
   config.vm.synced_folder 'htdocs/', '/vagrant-htdocs', owner: 'www-data', group: 'www-data'
