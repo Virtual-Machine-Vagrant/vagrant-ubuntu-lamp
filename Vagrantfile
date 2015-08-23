@@ -9,7 +9,7 @@ Vagrant.configure(2) do |config|
   config.landrush.tld = 'vm' # Set a matching custom TLD to use for this VM.
 
   config.vm.synced_folder 'htdocs/', '/vagrant-htdocs', owner: 'www-data', group: 'www-data'
-  # ↑ Mount a special `/vagrant-htdocs` directory that will be owned by Apache.
+  # ↑ Mount a special `/vagrant-htdocs` directory that will be owned by `www-data`.
 
   if !File.dirname(__FILE__).scan(/\.vm$/i).empty? # Current project directory ends with a `.vm` suffix?
     # If your project directory has `.vm` suffix, the hostname is forced to the directory basename.
