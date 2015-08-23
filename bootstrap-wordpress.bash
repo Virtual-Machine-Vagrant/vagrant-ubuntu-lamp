@@ -20,14 +20,13 @@ fi; # End conditional check.
 
 # Download and install the latest version of WordPress.
 
-curl --location --output /tmp/wordpress-latest.zip http://wordpress.org/latest.zip \
-	&& unzip -qq -d /tmp/wordpress-latest /tmp/wordpress-latest.zip;
+curl --location --output /tmp/wordpress-latest.zip http://wordpress.org/latest.zip;
+unzip -qq -d /tmp/wordpress-latest /tmp/wordpress-latest.zip;
+
 cp --force --recursive /tmp/wordpress-latest/wordpress/* /vagrant-htdocs;
-rm -r /tmp/wordpress-latest && rm /tmp/wordpress-latest.zip;
-
-# Configure WordPress using a preset `/wp-config.php` file.
-
 cp --force /vagrant/assets/wordpress/.wp-config.php /vagrant-htdocs/wp-config.php;
+
+rm -r /tmp/wordpress-latest && rm /tmp/wordpress-latest.zip;
 
 # Create theme/plugin symlinks if possible.
 

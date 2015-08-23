@@ -48,6 +48,7 @@ apt-get update; # May take a moment.
 
 # Install utilities.
 
+apt-get install cmake --yes;
 apt-get install zip unzip --yes;
 apt-get install git --yes;
 
@@ -142,7 +143,16 @@ mysql --password="$MYSQL_DB_PASSWORD" --execute="DELETE FROM \`mysql\`.\`user\` 
 mysql --password="$MYSQL_DB_PASSWORD" --execute="DROP DATABASE IF EXISTS \`test\`; DELETE FROM \`mysql\`.\`db\` WHERE \`Db\` = 'test' OR \`Db\` LIKE 'test\\_%';";
 mysql --password="$MYSQL_DB_PASSWORD" --execute="FLUSH PRIVILEGES;";
 
-ln --symbolic --force /vagrant/assets/apache/tools/.pma.php /vagrant/assets/apache/tools/pma/config.inc.php;
+# Install phpMyAdmin for MySQL adminstration.
+
+curl --location --output /tmp/pma-latest.zip https://github.com/phpmyadmin/phpmyadmin/archive/STABLE.zip;
+unzip -qq -d /tmp/pma-latest /tmp/pma-latest.zip; # Unzip the distribution.
+
+mkdir --parents /vagrant/assets/tools/pma; # Copy into assets & symlink config.
+cp --force --recursive /tmp/pma-latest/phpmyadmin-STABLE/* /vagrant/assets/tools/pma;
+ln --symbolic --force /vagrant/assets/tools/.pma.php /vagrant/assets/tools/pma/config.inc.php;
+
+rm -r /tmp/pma-latest && rm /tmp/pma-latest.zip; # Cleanup.
 
 # Install PHP and PHP process manager.
 
