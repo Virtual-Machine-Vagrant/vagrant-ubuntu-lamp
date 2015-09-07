@@ -1,4 +1,4 @@
-## VirtualBox + Vagrant + Landrush; running Ubuntu 15.04 w/ Apache, MySQL, PHP, and WordPress.
+## VirtualBox + Vagrant + Landrush; running Ubuntu 14.04 w/ Apache, MySQL, PHP, and WordPress.
 
 ![](http://cdn.websharks-inc.com/jaswsinc/uploads/2015/03/os-x-vagrant-virtualbox.png)
 
@@ -16,10 +16,10 @@ $ brew cask install vagrant
 $ vagrant plugin install landrush
 ```
 
-You need to install the `ubuntu/vivid64` Box.
+You need to install the `ubuntu/trusty64` Box.
 
 ```bash
-$ vagrant box add ubuntu/vivid64
+$ vagrant box add ubuntu/trusty64
 ```
 
 #### Step 2: Clone GitHub Repo (Ubuntu LAMP Stack)

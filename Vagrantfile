@@ -1,5 +1,5 @@
 Vagrant.configure(2) do |config|
-  config.vm.box = 'ubuntu/vivid64' # Running Ubuntu.
+  config.vm.box = 'ubuntu/trusty64' # Running Ubuntu.
   config.vm.provision :shell, path: 'bootstrap.bash', run: 'always'
   config.vm.provision :shell, path: 'bootstrap-wordpress.bash', run: 'always'
   # ↑ Tell Vagrant to run these scripts as part of the provisioning process.
