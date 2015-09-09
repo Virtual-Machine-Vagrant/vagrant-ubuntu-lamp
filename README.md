@@ -1,4 +1,4 @@
-## VirtualBox + Vagrant + Landrush; running Ubuntu 14.04 w/ Apache, MySQL, PHP, and WordPress.
+## VirtualBox + Vagrant + Landrush; running Ubuntu w/ Apache, MySQL, PHP, and WordPress.
 
 ![](http://cdn.websharks-inc.com/jaswsinc/uploads/2015/03/os-x-vagrant-virtualbox.png)
 
