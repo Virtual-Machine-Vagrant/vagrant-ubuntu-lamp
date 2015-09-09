@@ -18,11 +18,15 @@ TOOLS_PMA_BLOWFISH_KEY='vagrant';
 SSL_CSR_INFO="
 C=US
 ST=$HOST_NAME
+L=$HOST_NAME
 O=$HOST_NAME
-localityName=$HOST_NAME
-commonName=*.$HOST_NAME
-organizationalUnitName=$HOST_NAME
+OU=$HOST_NAME
+CN=$HOST_NAME
 emailAddress=vagrant@$HOST_NAME
+";
+SSL_CSR_ALTNAMES="
+DNS:$HOST_NAME
+DNS:*.$HOST_NAME
 ";
 
 # ---------------------------------------------
@@ -66,8 +70,19 @@ echo "TOOLS_PMA_BLOWFISH_KEY='$TOOLS_PMA_BLOWFISH_KEY'" >> /etc/environment;
 
 mkdir --parents /etc/vagrant/ssl;
 openssl genrsa -out /etc/vagrant/ssl/.key 2048;
-openssl req -new -subj "$(echo -n "$SSL_CSR_INFO" | tr "\n" "/")" -key /etc/vagrant/ssl/.key -out /etc/vagrant/ssl/.csr -passin pass:'';
-openssl x509 -req -days 365 -in /etc/vagrant/ssl/.csr -signkey /etc/vagrant/ssl/.key -out /etc/vagrant/ssl/.crt;
+
+export OPENSSL_CSR_ALTNAMES; # Needed by config file.
+perl -i -pe 's/^#\s*(req_extensions\s)/$1/m' /etc/ssl/openssl.cnf;
+perl -i -pe 's/^(\[\s*v3_req\s*\])\$/$1\nsubjectAltName=\$ENV::OPENSSL_CSR_ALTNAMES/m' /etc/ssl/openssl.cnf;
+OPENSSL_CSR_ALTNAMES="$(echo -n "$SSL_CSR_ALTNAMES" | perl -pe 's/(^\s+|\s+\$)//g' | tr '\n' ',')";
+
+openssl req -new -subj /"$(echo -n "$SSL_CSR_INFO" | perl -pe 's/(^\s+|\s+\$)//g' | tr '\n' '/')" \
+  -key /etc/vagrant/ssl/.key -out /etc/vagrant/ssl/.csr -passin pass:'' \
+  -config /etc/ssl/openssl.cnf -extensions v3_req;
+
+openssl x509 -req -days 365 -in /etc/vagrant/ssl/.csr \
+  -signkey /etc/vagrant/ssl/.key -out /etc/vagrant/ssl/.crt \
+  -extfile /etc/ssl/openssl.cnf -extensions v3_req;
 
 # Generate user/pass for web-based tools.
 
