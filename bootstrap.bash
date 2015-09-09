@@ -196,4 +196,5 @@ service apache2 restart;
 
 # Mark setup as being complete.
 
+mkdir --parents /etc/vagrant;
 touch /etc/vagrant/.bootstrap-complete;
