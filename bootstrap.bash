@@ -4,8 +4,9 @@
 # ---------- Configuration ----------
 # ---------------------------------------------
 
-HOST_NAME="$(hostname)";
+HOST_NAME="$(hostname)".vm;
 
+MYSQL_DB_HOST='localhost';
 MYSQL_DB_NAME='vagrant';
 MYSQL_DB_USER='vagrant';
 MYSQL_DB_PASSWORD='vagrant';
@@ -19,10 +20,11 @@ C=US
 ST=$HOST_NAME
 O=$HOST_NAME
 localityName=$HOST_NAME
-commonName=$HOST_NAME
+commonName=*.$HOST_NAME
 organizationalUnitName=$HOST_NAME
 emailAddress=vagrant@$HOST_NAME
 ";
+
 # ---------------------------------------------
 # ---------- Check Setup State ----------
 # ---------------------------------------------
@@ -33,7 +35,7 @@ if [[ -f /etc/vagrant/.bootstrap-complete ]]; then
 	service php5-fpm restart;
 	service apache2 restart;
 
-	exit 0; # Nothing more.
+  exit 0; # Nothing more.
 
 fi; # End conditional check.
 
@@ -48,20 +50,19 @@ apt-get update; # May take a moment.
 
 # Install utilities.
 
-apt-get install cmake --yes;
-apt-get install zip unzip --yes;
 apt-get install git --yes;
+apt-get install zip unzip --yes;
 apt-get install apache2-utils --yes;
 
 # Global environment variables.
 
-echo "MYSQL_DB_HOST='localhost'" >> /etc/environment \
-  && echo "MYSQL_DB_NAME='$MYSQL_DB_NAME'" >> /etc/environment \
-  && echo "MYSQL_DB_USER='$MYSQL_DB_USER'" >> /etc/environment \
-  && echo "MYSQL_DB_PASSWORD='$MYSQL_DB_PASSWORD'" >> /etc/environment \
-  && echo "TOOLS_PMA_BLOWFISH_KEY='$TOOLS_PMA_BLOWFISH_KEY'" >> /etc/environment;
+echo "MYSQL_DB_HOST='$MYSQL_DB_HOST'" >> /etc/environment;
+echo "MYSQL_DB_NAME='$MYSQL_DB_NAME'" >> /etc/environment;
+echo "MYSQL_DB_USER='$MYSQL_DB_USER'" >> /etc/environment;
+echo "MYSQL_DB_PASSWORD='$MYSQL_DB_PASSWORD'" >> /etc/environment;
+echo "TOOLS_PMA_BLOWFISH_KEY='$TOOLS_PMA_BLOWFISH_KEY'" >> /etc/environment;
 
-# Generate SSL certificate.
+# Generate an SSL certificate.
 
 mkdir --parents /etc/vagrant/ssl;
 openssl genrsa -out /etc/vagrant/ssl/.key 2048;
@@ -128,16 +129,17 @@ sed --in-place 's/^\s*SSLProtocol all\s*$/SSLProtocol all -SSLv2 -SSLv3/I' /etc/
 
 # Install MySQL database server.
 
+mkdir --parents --mode=777 /var/log/mysql;
+
 echo 'mysql-server mysql-server/root_password password '"$MYSQL_DB_PASSWORD" | debconf-set-selections \
   && echo 'mysql-server mysql-server/root_password_again password '"$MYSQL_DB_PASSWORD" | debconf-set-selections \
-	&& apt-get install mysql-server --yes;
+  && apt-get install mysql-server --yes;
 
-mkdir --parents --mode=777 /var/log/mysql;
 ln --symbolic /vagrant/assets/mysql/.cnf /etc/mysql/conf.d/z90.cnf;
 
 mysql_install_db; # Install database tables.
 
-mysql --password="$MYSQL_DB_PASSWORD" --execute="GRANT ALL ON *.* TO '$MYSQL_DB_USER'@'localhost' IDENTIFIED BY '$MYSQL_DB_PASSWORD';";
+mysql --password="$MYSQL_DB_PASSWORD" --execute="GRANT ALL ON *.* TO '$MYSQL_DB_USER'@'$MYSQL_DB_HOST' IDENTIFIED BY '$MYSQL_DB_PASSWORD';";
 mysql --password="$MYSQL_DB_PASSWORD" --execute="CREATE DATABASE \`$MYSQL_DB_NAME\` CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci';";
 
 mysql --password="$MYSQL_DB_PASSWORD" --execute="DELETE FROM \`mysql\`.\`user\` WHERE \`User\` = '';";
@@ -147,14 +149,9 @@ mysql --password="$MYSQL_DB_PASSWORD" --execute="FLUSH PRIVILEGES;";
 
 # Install phpMyAdmin for MySQL adminstration.
 
-curl --location --output /tmp/pma-latest.zip https://github.com/phpmyadmin/phpmyadmin/archive/STABLE.zip;
-unzip -qq -d /tmp/pma-latest /tmp/pma-latest.zip; # Unzip the distribution.
-
-mkdir --parents /vagrant/assets/tools/pma; # Copy into assets & symlink config.
-cp --force --recursive /tmp/pma-latest/phpmyadmin-STABLE/* /vagrant/assets/tools/pma;
-ln --symbolic --force /vagrant/assets/tools/.pma.php /vagrant/assets/tools/pma/config.inc.php;
-
-rm -r /tmp/pma-latest && rm /tmp/pma-latest.zip; # Cleanup.
+git clone https://github.com/phpmyadmin/phpmyadmin /usr/local/src/pma --branch=STABLE --depth=1;
+ln --symbolic /vagrant/assets/tools/.pma.php /usr/local/src/pma/config.inc.php;
+ln --symbolic /usr/local/src/pma /vagrant/assets/tools/pma;
 
 # Install PHP and PHP process manager.
 
@@ -178,14 +175,20 @@ ln --symbolic /vagrant/assets/php/.ini /etc/php5/fpm/conf.d/z90.ini;
 ln --symbolic /vagrant/assets/php/fpm/.conf /etc/php5/fpm/pool.d/z90.conf;
 mv /etc/php5/fpm/pool.d/www.conf /etc/php5/fpm/pool.d/www.conf~;
 
-echo '[www]' >> /etc/php5/fpm/pool.d/env.conf \
-  && echo "env[MYSQL_DB_HOST] = 'localhost'" >> /etc/php5/fpm/pool.d/env.conf \
-  && echo "env[MYSQL_DB_NAME] = '$MYSQL_DB_NAME'" >> /etc/php5/fpm/pool.d/env.conf \
-  && echo "env[MYSQL_DB_USER] = '$MYSQL_DB_USER'" >> /etc/php5/fpm/pool.d/env.conf \
-  && echo "env[MYSQL_DB_PASSWORD] = '$MYSQL_DB_PASSWORD'" >> /etc/php5/fpm/pool.d/env.conf \
-  && echo "env[TOOLS_PMA_BLOWFISH_KEY] = '$TOOLS_PMA_BLOWFISH_KEY'" >> /etc/php5/fpm/pool.d/env.conf;
+echo '[www]' >> /etc/php5/fpm/pool.d/env.conf;
+echo "env[MYSQL_DB_HOST] = 'localhost'" >> /etc/php5/fpm/pool.d/env.conf;
+echo "env[MYSQL_DB_NAME] = '$MYSQL_DB_NAME'" >> /etc/php5/fpm/pool.d/env.conf;
+echo "env[MYSQL_DB_USER] = '$MYSQL_DB_USER'" >> /etc/php5/fpm/pool.d/env.conf;
+echo "env[MYSQL_DB_PASSWORD] = '$MYSQL_DB_PASSWORD'" >> /etc/php5/fpm/pool.d/env.conf;
+echo "env[TOOLS_PMA_BLOWFISH_KEY] = '$TOOLS_PMA_BLOWFISH_KEY'" >> /etc/php5/fpm/pool.d/env.conf;
 
-# Restart services.
+# Mount a RAM disk partition.
+
+mkdir --parents /dev/shm/ramdisk;
+echo 'tmpfs /dev/shm/ramdisk tmpfs defaults,size=50% 0 0' >> /etc/fstab;
+mount -a; # Mount the new partition.
+
+# Start/restart services.
 
 service mysql restart;
 service php5-fpm restart;

@@ -14,6 +14,7 @@ You need to have VirtualBox, Vagrant, and Landrush installed.
 $ brew cask install virtualbox
 $ brew cask install vagrant
 $ vagrant plugin install landrush
+$ vagrant plugin install vagrant-cachier # Suggested (optional).
 ```
 
 You need to install the `ubuntu/trusty64` Box.
@@ -76,7 +77,7 @@ Available Tools (Using Any of These is Optional):
   DB name: `vagrant`, DB username: `vagrant`, DB password: `vagrant`
 - <https://my.vm/tools/opcache> PHP OPCache extension status dump.
 - <https://my.vm/tools/info.php> PHP info (i.e., `phpinfo()`) page.
-- <https://my.vm/tools/php5-fpm-status/> PHP5-FPM status page.
+- <https://my.vm/tools/fpm-status.php> PHP-FPM status page.
 - <https://my.vm/tools/apache-status/> Apache status page.
 - <https://my.vm/tools/apache-info/> Apache info page.
 
