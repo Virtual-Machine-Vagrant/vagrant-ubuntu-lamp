@@ -74,7 +74,7 @@ openssl genrsa -out /etc/vagrant/ssl/.key 2048;
 export OPENSSL_CSR_ALTNAMES; # Needed by config file.
 perl -i -pe 's/^#\s*(req_extensions\s)/$1/m' /etc/ssl/openssl.cnf;
 perl -i -pe 's/^#\s*(copy_extensions\s)/$1/m' /etc/ssl/openssl.cnf;
-perl -i -pe 's/^(\[\s*v3_req\s*\])\$/$1\nsubjectAltName=\$ENV::OPENSSL_CSR_ALTNAMES/m' /etc/ssl/openssl.cnf;
+perl -i -pe 's/^(\[\s*v3_req\s*\])$/$1\nsubjectAltName=\$ENV::OPENSSL_CSR_ALTNAMES/m' /etc/ssl/openssl.cnf;
 OPENSSL_CSR_ALTNAMES="$(echo -n "$SSL_CSR_ALTNAMES" | perl -pe 's/(^\s+|\s+\$)//g' | tr '\n' ',')";
 
 openssl req -new -subj /"$(echo -n "$SSL_CSR_INFO" | perl -pe 's/(^\s+|\s+\$)//g' | tr '\n' '/')" \
