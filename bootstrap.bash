@@ -77,21 +77,24 @@ echo "TOOLS_PMA_BLOWFISH_KEY='$TOOLS_PMA_BLOWFISH_KEY'" >> /etc/environment;
 # Generate an SSL certificate.
 
 mkdir --parents /etc/vagrant/ssl;
-openssl genrsa -out /etc/vagrant/ssl/.key 2048;
 
 export OPENSSL_CSR_ALTNAMES; # Needed by config file.
-perl -i -pe 's/^#\s*(req_extensions\s)/$1/m' /etc/ssl/openssl.cnf;
-perl -i -pe 's/^#\s*(copy_extensions\s)/$1/m' /etc/ssl/openssl.cnf;
-perl -i -pe 's/^(\[\s*v3_req\s*\])$/$1\nsubjectAltName=\$ENV::OPENSSL_CSR_ALTNAMES/m' /etc/ssl/openssl.cnf;
 OPENSSL_CSR_ALTNAMES="$(echo -n "$SSL_CSR_ALTNAMES" | trim | tr '\n' ',')";
+
+cp /etc/ssl/openssl.cnf /etc/ssl/vagrant-ss-openssl.cnf;
+perl -i -pe 's/^#\s*(req_extensions\s)/$1/m' /etc/ssl/vagrant-ss-openssl.cnf;
+perl -i -pe 's/^#\s*(copy_extensions\s)/$1/m' /etc/ssl/vagrant-ss-openssl.cnf;
+perl -i -pe 's/^(\[\s*v3_req\s*\])$/$1\nsubjectAltName=\$ENV::OPENSSL_CSR_ALTNAMES/m' /etc/ssl/vagrant-ss-openssl.cnf;
+
+openssl genrsa -out /etc/vagrant/ssl/.key 2048; # Generate key.
 
 openssl req -new -subj /"$(echo -n "$SSL_CSR_INFO" | trim | tr '\n' '/')" \
   -key /etc/vagrant/ssl/.key -out /etc/vagrant/ssl/.csr -passin pass:'' \
-  -config /etc/ssl/openssl.cnf -extensions v3_req;
+  -config /etc/ssl/vagrant-ss-openssl.cnf -extensions v3_req;
 
 openssl x509 -req -days 365 -in /etc/vagrant/ssl/.csr \
   -signkey /etc/vagrant/ssl/.key -out /etc/vagrant/ssl/.crt \
-  -extfile /etc/ssl/openssl.cnf -extensions v3_req;
+  -extfile /etc/ssl/vagrant-ss-openssl.cnf -extensions v3_req;
 
 # Generate user/pass for web-based tools.
 

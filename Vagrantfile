@@ -12,17 +12,17 @@ Vagrant.configure(2) do |config|
 
   # Mount WordPress project directory.
   if File.directory? File.expand_path('~/projects/wordpress')
-    config.vm.synced_folder File.expand_path('~/projects/wordpress'), '/vagrant-wordpress', mount_options: ['ro']
+    config.vm.synced_folder File.expand_path('~/projects/wordpress'), '/vagrant-wordpress'
   end
 
   # Mount WordPress project directory.
   if File.directory? File.expand_path('~/projects/jaswsinc/wordpress')
-    config.vm.synced_folder File.expand_path('~/projects/jaswsinc/wordpress'), '/vagrant-jaswsinc-wordpress', mount_options: ['ro']
+    config.vm.synced_folder File.expand_path('~/projects/jaswsinc/wordpress'), '/vagrant-jaswsinc-wordpress'
   end
 
   # Mount WordPress project directory.
   if File.directory? File.expand_path('~/projects/websharks/wordpress')
-    config.vm.synced_folder File.expand_path('~/projects/websharks/wordpress'), '/vagrant-websharks-wordpress', mount_options: ['ro']
+    config.vm.synced_folder File.expand_path('~/projects/websharks/wordpress'), '/vagrant-websharks-wordpress'
   end
 
   # Configure DNS automaticaly?

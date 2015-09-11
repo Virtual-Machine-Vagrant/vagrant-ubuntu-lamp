@@ -119,22 +119,20 @@ See `/Vagrantfile` where you will find this section already implemented.
 _~ See also: `/bootstrap-wordpress.bash`_
 
 ```ruby
-if File.directory? File.expand_path('~/projects/wordpress') # Mount WordPress projects directory.
-  config.vm.synced_folder File.expand_path('~/projects/wordpress'), '/vagrant-wordpress', mount_options: ['ro']
+if File.directory? File.expand_path('~/projects/wordpress')
+  config.vm.synced_folder File.expand_path('~/projects/wordpress'), '/vagrant-wordpress'
 end
-if File.directory? File.expand_path('~/projects/jaswsinc/wordpress') # Mount WordPress projects directory.
-  config.vm.synced_folder File.expand_path('~/projects/jaswsinc/wordpress'), '/vagrant-jaswsinc-wordpress', mount_options: ['ro']
+if File.directory? File.expand_path('~/projects/jaswsinc/wordpress')
+  config.vm.synced_folder File.expand_path('~/projects/jaswsinc/wordpress'), '/vagrant-jaswsinc-wordpress'
 end
-if File.directory? File.expand_path('~/projects/websharks/wordpress') # Mount WordPress projects directory.
-  config.vm.synced_folder File.expand_path('~/projects/websharks/wordpress'), '/vagrant-websharks-wordpress', mount_options: ['ro']
+if File.directory? File.expand_path('~/projects/websharks/wordpress')
+  config.vm.synced_folder File.expand_path('~/projects/websharks/wordpress'), '/vagrant-websharks-wordpress'
 end
 ```
 
-_Note: `['ro']` = read-only. This is to prevent data loss while you're experimenting on the VM. I suggest leaving it this way._
-
 #### ↑ What is happening here w/ these WordPress directories?
 
-The `Vagrantfile` is automatically mounting read-only drives on your VM that are sourced by your local `~/projects` directory (if you have one). Thus, if you have your WordPress themes/plugins in `~/projects/wordpress` (i.e., in your local filesystem), it will be mounted on the VM automatically, as `/vagrant-wordpress`.
+The `Vagrantfile` is automatically mounting drives on your VM that are sourced by your local `~/projects` directory (if you have one). Thus, if you have your WordPress themes/plugins in `~/projects/wordpress` (i.e., in your local filesystem), it will be mounted on the VM automatically, as `/vagrant-wordpress`.
 
 In the `bootstrap-wordpress.bash` file, we iterate `/vagrant-wordpress` and build symlinks for each of your themes/plugins automatically. This means that when you log into your WordPress Dashboard (<http://my.vm/wp-admin/>), you will have all of your themes/plugins available for testing. If you make edits locally in your favorite editor, they are updated in real-time on the VM. Very cool!
 
