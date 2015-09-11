@@ -164,7 +164,7 @@ ln --symbolic /vagrant/assets/mysql/.cnf /etc/mysql/conf.d/z90.cnf;
 
 mysql_install_db; # Install database tables.
 
-mysql --password="$MYSQL_DB_PASSWORD" --execute="GRANT ALL ON *.* TO '$MYSQL_DB_USER'@'$MYSQL_DB_USER' IDENTIFIED BY '$MYSQL_DB_PASSWORD';";
+mysql --password="$MYSQL_DB_PASSWORD" --execute="GRANT ALL ON *.* TO '$MYSQL_DB_USER'@'$MYSQL_DB_HOST' IDENTIFIED BY '$MYSQL_DB_PASSWORD';";
 mysql --password="$MYSQL_DB_PASSWORD" --execute="CREATE DATABASE \`$MYSQL_DB_NAME\` CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci';";
 
 mysql --password="$MYSQL_DB_PASSWORD" --execute="DELETE FROM \`mysql\`.\`user\` WHERE \`User\` = '';";
