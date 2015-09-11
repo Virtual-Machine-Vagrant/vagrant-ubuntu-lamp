@@ -35,7 +35,7 @@ DIRNAME="$(dirname "${BASH_SOURCE[0]}")";
 # ---------- Functions ------------------------
 # ---------------------------------------------
 
-. "$DIRNAME"/assets/bash/funcs.bash;
+. /vagrant/assets/bash/funcs.bash;
 
 # ---------------------------------------------
 # ---------- Check Setup State ----------------
@@ -80,9 +80,9 @@ mkdir --parents /etc/vagrant/ssl;
 openssl genrsa -out /etc/vagrant/ssl/.key 2048;
 
 export OPENSSL_CSR_ALTNAMES; # Needed by config file.
-perl -pie 's/^#\s*(req_extensions\s)/$1/m' /etc/ssl/openssl.cnf;
-perl -pie 's/^#\s*(copy_extensions\s)/$1/m' /etc/ssl/openssl.cnf;
-perl -pie 's/^(\[\s*v3_req\s*\])$/$1\nsubjectAltName=\$ENV::OPENSSL_CSR_ALTNAMES/m' /etc/ssl/openssl.cnf;
+perl -i -pe 's/^#\s*(req_extensions\s)/$1/m' /etc/ssl/openssl.cnf;
+perl -i -pe 's/^#\s*(copy_extensions\s)/$1/m' /etc/ssl/openssl.cnf;
+perl -i -pe 's/^(\[\s*v3_req\s*\])$/$1\nsubjectAltName=\$ENV::OPENSSL_CSR_ALTNAMES/m' /etc/ssl/openssl.cnf;
 OPENSSL_CSR_ALTNAMES="$(echo -n "$SSL_CSR_ALTNAMES" | trim | tr '\n' ',')";
 
 openssl req -new -subj /"$(echo -n "$SSL_CSR_INFO" | trim | tr '\n' '/')" \

@@ -10,7 +10,7 @@ DIRNAME="$(dirname "${BASH_SOURCE[0]}")";
 # ---------- Functions ------------------------
 # ---------------------------------------------
 
-. "$DIRNAME"/assets/bash/funcs.bash;
+. /vagrant/assets/bash/funcs.bash;
 
 # ---------------------------------------------
 # ---------- Check Setup State ----------------
