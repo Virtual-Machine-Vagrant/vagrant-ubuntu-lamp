@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # ---------------------------------------------
-# ---------- Configuration ----------
+# ---------- Configuration --------------------
 # ---------------------------------------------
 
 HOST_NAME="$(hostname)".vm;
@@ -29,8 +29,16 @@ DNS:$HOST_NAME
 DNS:*.$HOST_NAME
 ";
 
+DIRNAME="$(dirname "${BASH_SOURCE[0]}")";
+
 # ---------------------------------------------
-# ---------- Check Setup State ----------
+# ---------- Functions ------------------------
+# ---------------------------------------------
+
+. "$DIRNAME"/assets/bash/funcs.bash;
+
+# ---------------------------------------------
+# ---------- Check Setup State ----------------
 # ---------------------------------------------
 
 if [[ -f /etc/vagrant/.bootstrap-complete ]]; then
@@ -44,7 +52,7 @@ if [[ -f /etc/vagrant/.bootstrap-complete ]]; then
 fi; # End conditional check.
 
 # ---------------------------------------------
-# ---------- Run Setup Routines ----------
+# ---------- Run Setup Routines ---------------
 # ---------------------------------------------
 
 # Update package repositories.
@@ -72,12 +80,12 @@ mkdir --parents /etc/vagrant/ssl;
 openssl genrsa -out /etc/vagrant/ssl/.key 2048;
 
 export OPENSSL_CSR_ALTNAMES; # Needed by config file.
-perl -i -pe 's/^#\s*(req_extensions\s)/$1/m' /etc/ssl/openssl.cnf;
-perl -i -pe 's/^#\s*(copy_extensions\s)/$1/m' /etc/ssl/openssl.cnf;
-perl -i -pe 's/^(\[\s*v3_req\s*\])$/$1\nsubjectAltName=\$ENV::OPENSSL_CSR_ALTNAMES/m' /etc/ssl/openssl.cnf;
-OPENSSL_CSR_ALTNAMES="$(echo -n "$SSL_CSR_ALTNAMES" | perl -pe 's/(^\s+|\s+\$)//g' | tr '\n' ',')";
+perl -pie 's/^#\s*(req_extensions\s)/$1/m' /etc/ssl/openssl.cnf;
+perl -pie 's/^#\s*(copy_extensions\s)/$1/m' /etc/ssl/openssl.cnf;
+perl -pie 's/^(\[\s*v3_req\s*\])$/$1\nsubjectAltName=\$ENV::OPENSSL_CSR_ALTNAMES/m' /etc/ssl/openssl.cnf;
+OPENSSL_CSR_ALTNAMES="$(echo -n "$SSL_CSR_ALTNAMES" | trim | tr '\n' ',')";
 
-openssl req -new -subj /"$(echo -n "$SSL_CSR_INFO" | perl -pe 's/(^\s+|\s+\$)//g' | tr '\n' '/')" \
+openssl req -new -subj /"$(echo -n "$SSL_CSR_INFO" | trim | tr '\n' '/')" \
   -key /etc/vagrant/ssl/.key -out /etc/vagrant/ssl/.csr -passin pass:'' \
   -config /etc/ssl/openssl.cnf -extensions v3_req;
 

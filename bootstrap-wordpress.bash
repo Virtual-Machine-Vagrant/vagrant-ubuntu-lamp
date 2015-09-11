@@ -1,13 +1,19 @@
 #!/usr/bin/env bash
 
 # ---------------------------------------------
-# ---------- Configuration ----------
+# ---------- Configuration --------------------
 # ---------------------------------------------
 
-# Nothing to configure at this time.
+DIRNAME="$(dirname "${BASH_SOURCE[0]}")";
 
 # ---------------------------------------------
-# ---------- Check Setup State ----------
+# ---------- Functions ------------------------
+# ---------------------------------------------
+
+. "$DIRNAME"/assets/bash/funcs.bash;
+
+# ---------------------------------------------
+# ---------- Check Setup State ----------------
 # ---------------------------------------------
 
 if [[ -f /etc/vagrant/.wordpress-complete ]]; then
@@ -15,7 +21,7 @@ if [[ -f /etc/vagrant/.wordpress-complete ]]; then
 fi; # End conditional check.
 
 # ---------------------------------------------
-# ---------- Run Setup Routines ----------
+# ---------- Run Setup Routines ---------------
 # ---------------------------------------------
 
 # Download and install the latest version of WordPress.
