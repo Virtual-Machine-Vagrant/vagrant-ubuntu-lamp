@@ -6,7 +6,7 @@
 
 HOST_NAME="$(hostname)".vm;
 
-MYSQL_DB_HOST='localhost';
+MYSQL_DB_HOST='127.0.0.1';
 MYSQL_DB_NAME='vagrant';
 MYSQL_DB_USER='vagrant';
 MYSQL_DB_PASSWORD='vagrant';
