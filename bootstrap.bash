@@ -202,7 +202,7 @@ ln --symbolic /vagrant/assets/php/fpm/.conf /etc/php5/fpm/pool.d/z90.conf;
 mv /etc/php5/fpm/pool.d/www.conf /etc/php5/fpm/pool.d/www.conf~;
 
 echo '[www]' >> /etc/php5/fpm/pool.d/env.conf;
-echo "env[MYSQL_DB_HOST] = 'localhost'" >> /etc/php5/fpm/pool.d/env.conf;
+echo "env[MYSQL_DB_HOST] = '$MYSQL_DB_HOST'" >> /etc/php5/fpm/pool.d/env.conf;
 echo "env[MYSQL_DB_NAME] = '$MYSQL_DB_NAME'" >> /etc/php5/fpm/pool.d/env.conf;
 echo "env[MYSQL_DB_USER] = '$MYSQL_DB_USER'" >> /etc/php5/fpm/pool.d/env.conf;
 echo "env[MYSQL_DB_PASSWORD] = '$MYSQL_DB_PASSWORD'" >> /etc/php5/fpm/pool.d/env.conf;
