@@ -64,6 +64,11 @@ apt-get install git --yes;
 apt-get install zip unzip --yes;
 apt-get install apache2-utils --yes;
 
+# Configure server timezone.
+
+echo 'Etc/UTC' > /etc/timezone;
+dpkg-reconfigure --frontend noninteractive tzdata;
+
 # Global environment variables.
 
 echo "MYSQL_DB_HOST='$MYSQL_DB_HOST'" >> /etc/environment;
@@ -165,7 +170,7 @@ ln --symbolic /vagrant/assets/mysql/.cnf /etc/mysql/conf.d/z90.cnf;
 mysql_install_db; # Install database tables.
 
 mysql --password="$MYSQL_DB_PASSWORD" --execute="GRANT ALL ON *.* TO '$MYSQL_DB_USER'@'$MYSQL_DB_HOST' IDENTIFIED BY '$MYSQL_DB_PASSWORD';";
-mysql --password="$MYSQL_DB_PASSWORD" --execute="CREATE DATABASE \`$MYSQL_DB_NAME\` CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci';";
+mysql --password="$MYSQL_DB_PASSWORD" --execute="CREATE DATABASE \`$MYSQL_DB_NAME\` CHARACTER SET 'utf8' COLLATE 'utf8mb4_unicode_ci';";
 
 mysql --password="$MYSQL_DB_PASSWORD" --execute="DELETE FROM \`mysql\`.\`user\` WHERE \`User\` = '';";
 mysql --password="$MYSQL_DB_PASSWORD" --execute="DELETE FROM \`mysql\`.\`user\` WHERE \`User\` = 'root' AND \`Host\` NOT IN ('localhost', '127.0.0.1', '::1');";
@@ -190,6 +195,7 @@ apt-get install php5-gd --yes;
 apt-get install php5-imagick --yes;
 apt-get install php5-json --yes;
 apt-get install php5-mysql --yes;
+apt-get install php5-intl --yes;
 
 apt-get install php5-mcrypt --yes;
 echo 'extension=mcrypt.so' > /etc/php5/cli/conf.d/20-mcrypt.ini;

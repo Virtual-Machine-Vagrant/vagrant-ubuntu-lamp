@@ -6,10 +6,15 @@
 
 ; The following is based on recommendations from Percona.
 
+[mysql]
+default_character_set = utf8mb4
+
 [mysqld]
 
 # GENERAL #
 default_storage_engine         = InnoDB
+character_set_server           = utf8mb4
+collation_server               = utf8mb4_unicode_ci
 
 # MyISAM #
 skip_external_locking
@@ -60,6 +65,7 @@ log_warnings                   = 2
 # BINARY LOGGING #
 sync_binlog                    = 1
 expire_logs_days               = 14
+binlog_format                  = MIXED
 log_bin                        = /var/log/mysql/bin.log
 
 # FULLTEXT SEARCHES #
