@@ -4,14 +4,20 @@
 # ---------- Configuration --------------------
 # ---------------------------------------------
 
-echo 'VAGRANT_DOTFILE_PATH = '"$VAGRANT_DOTFILE_PATH";
+DIRNAME="$(dirname "${BASH_SOURCE[0]}")";
 
 # ---------------------------------------------
 # ---------- Check Setup State ----------------
 # ---------------------------------------------
 
-if [[ -f "$VAGRANT_DOTFILE_PATH"/.bootstrap-complete ]]; then
+if [[ -f "$DIRNAME"/.vagrant/.bootstrap-complete ]]; then
+
+  if [[ "$OSTYPE" == 'darwin'* ]]; then
+    echo 'Flushing DNS on Mac OS X; requires sudo...';
+    sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder;
+  fi;
   exit 0; # Nothing more.
+
 fi; # End conditional check.
 
 # ---------------------------------------------
@@ -25,6 +31,4 @@ fi;
 
 # Mark setup as being complete.
 
-if [[ -d "$VAGRANT_DOTFILE_PATH" ]]; then
-  touch "$VAGRANT_DOTFILE_PATH"/.bootstrap-complete;
-fi;
+touch "$DIRNAME"/.vagrant/.bootstrap-complete;
