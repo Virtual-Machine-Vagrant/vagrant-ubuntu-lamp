@@ -6,12 +6,25 @@
 
 ; The following is based on recommendations from Percona.
 
-[mysql]
+[client]
+
+# SSL CONFIG #
+ssl_ca=/vagrant/assets/ssl/ca.vm.crt
+ssl_cert=/etc/vagrant/ssl/.crt
+ssl_key=/etc/vagrant/ssl/.key
+
+# GENERAL #
 default_character_set = utf8mb4
 
 [mysqld]
 
+# SSL CONFIG #
+ssl_ca=/vagrant/assets/ssl/ca.vm.crt
+ssl_cert=/etc/vagrant/ssl/.crt
+ssl_key=/etc/vagrant/ssl/.key
+
 # GENERAL #
+bind_address                   = 0.0.0.0
 default_storage_engine         = InnoDB
 character_set_server           = utf8mb4
 collation_server               = utf8mb4_unicode_ci

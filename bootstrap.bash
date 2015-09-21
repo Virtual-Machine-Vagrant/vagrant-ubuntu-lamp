@@ -89,15 +89,19 @@ perl -i -pe 's/^#\s*(req_extensions\s)/$1/m' /etc/ssl/vagrant-ss-openssl.cnf;
 perl -i -pe 's/^#\s*(copy_extensions\s)/$1/m' /etc/ssl/vagrant-ss-openssl.cnf;
 perl -i -pe 's/^(\[\s*v3_req\s*\])$/$1\nsubjectAltName=\$ENV::OPENSSL_CSR_ALTNAMES/m' /etc/ssl/vagrant-ss-openssl.cnf;
 
-openssl genrsa -out /etc/vagrant/ssl/.key 2048; # Generate key.
+# To recreate the root CA that we use to sign each of these certificates.
+# openssl genrsa 2048 > /vagrant/assets/ssl/ca.vm.key; # This generates the private key.
+# openssl req -new -x509 -nodes -days 30000 -key /vagrant/assets/ssl/ca.vm.key > /vagrant/assets/ssl/ca.vm.crt;
 
-openssl req -new -subj /"$(echo -n "$SSL_CSR_INFO" | trim | tr '\n' '/')" \
-  -key /etc/vagrant/ssl/.key -out /etc/vagrant/ssl/.csr -passin pass:'' \
+openssl req -newkey rsa:2048 -nodes -days 30000 -utf8 \
+  -subj /"$(echo -n "$SSL_CSR_INFO" | trim | tr '\n' '/')" \
+  -keyout /etc/vagrant/ssl/.key -out /etc/vagrant/ssl/.csr \
   -config /etc/ssl/vagrant-ss-openssl.cnf -extensions v3_req;
 
-openssl x509 -req -days 365 -in /etc/vagrant/ssl/.csr \
-  -signkey /etc/vagrant/ssl/.key -out /etc/vagrant/ssl/.crt \
-  -extfile /etc/ssl/vagrant-ss-openssl.cnf -extensions v3_req;
+openssl x509 -req -days 30000 \
+  -in /etc/vagrant/ssl/.csr -out /etc/vagrant/ssl/.crt \
+  -extfile /etc/ssl/vagrant-ss-openssl.cnf -extensions v3_req \
+  -CA /vagrant/assets/ssl/ca.vm.crt -CAkey /vagrant/assets/ssl/ca.vm.key -set_serial 01;
 
 # Generate user/pass for web-based tools.
 
@@ -169,7 +173,7 @@ ln --symbolic /vagrant/assets/mysql/.cnf /etc/mysql/conf.d/z90.cnf;
 
 mysql_install_db; # Install database tables.
 
-mysql --password="$MYSQL_DB_PASSWORD" --execute="GRANT ALL ON *.* TO '$MYSQL_DB_USER'@'$MYSQL_DB_HOST' IDENTIFIED BY '$MYSQL_DB_PASSWORD';";
+mysql --password="$MYSQL_DB_PASSWORD" --execute="GRANT ALL ON *.* TO '$MYSQL_DB_USER'@'$MYSQL_DB_HOST' IDENTIFIED BY '$MYSQL_DB_PASSWORD' REQUIRE SSL;";
 mysql --password="$MYSQL_DB_PASSWORD" --execute="CREATE DATABASE \`$MYSQL_DB_NAME\` CHARACTER SET 'utf8' COLLATE 'utf8mb4_unicode_ci';";
 
 mysql --password="$MYSQL_DB_PASSWORD" --execute="DELETE FROM \`mysql\`.\`user\` WHERE \`User\` = '';";
