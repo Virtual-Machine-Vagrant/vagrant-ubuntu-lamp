@@ -15,6 +15,7 @@ $ brew cask install virtualbox
 $ brew cask install vagrant
 $ vagrant plugin install landrush
 $ vagrant plugin install vagrant-cachier # Suggested (optional).
+$ vagrant plugin install vagrant-triggers # Suggested (optional).
 ```
 
 You need to install the `ubuntu/trusty64` Box.

@@ -45,6 +45,11 @@ Vagrant.configure(2) do |config|
   end
 
   # Run script(s) as part of the provisioning process.
-  config.vm.provision :shell, path: 'bootstrap.bash', run: 'always'
-  config.vm.provision :shell, path: 'bootstrap-wordpress.bash', run: 'always'
+  config.vm.provision :shell, path: 'bootstrap', run: 'always'
+  config.vm.provision :shell, path: 'bootstrap-wp', run: 'always'
+  if Vagrant.has_plugin?('vagrant-triggers')
+    config.trigger.after [:up, :resume], :append_to_path => File.dirname(File.expand_path(__FILE__)) do
+      run 'bootstrap-me'
+    end
+  end
 end

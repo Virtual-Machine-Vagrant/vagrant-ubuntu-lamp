@@ -4,9 +4,10 @@
 # ---------- Configuration --------------------
 # ---------------------------------------------
 
-HOST_NAME="$(hostname)".vm;
+HOST_NAME="$(hostname --long)";
 
 MYSQL_DB_HOST='127.0.0.1';
+MYSQL_DB_PORT='3306';
 MYSQL_DB_NAME='vagrant';
 MYSQL_DB_USER='vagrant';
 MYSQL_DB_PASSWORD='vagrant';
@@ -33,7 +34,7 @@ DNS:*.$HOST_NAME
 # ---------- Functions ------------------------
 # ---------------------------------------------
 
-. /vagrant/assets/bash/funcs.bash;
+. /vagrant/assets/bash/funcs;
 
 # ---------------------------------------------
 # ---------- Check Setup State ----------------
@@ -72,12 +73,17 @@ dpkg-reconfigure --frontend noninteractive tzdata;
 # Global environment variables.
 
 echo "MYSQL_DB_HOST='$MYSQL_DB_HOST'" >> /etc/environment;
+echo "MYSQL_DB_PORT='$MYSQL_DB_PORT'" >> /etc/environment;
 echo "MYSQL_DB_NAME='$MYSQL_DB_NAME'" >> /etc/environment;
 echo "MYSQL_DB_USER='$MYSQL_DB_USER'" >> /etc/environment;
 echo "MYSQL_DB_PASSWORD='$MYSQL_DB_PASSWORD'" >> /etc/environment;
 echo "TOOLS_PMA_BLOWFISH_KEY='$TOOLS_PMA_BLOWFISH_KEY'" >> /etc/environment;
 
-# Generate an SSL certificate.
+# Generate SSL certificates.
+
+# To recreate the root CA key/crt files.
+# openssl genrsa 2048 > /vagrant/assets/ssl/ca.vm.key; # Private key.
+# openssl req -new -x509 -nodes -days 30000 -key ca.vm.key > ca.vm.crt;
 
 mkdir --parents /etc/vagrant/ssl;
 
@@ -89,19 +95,43 @@ perl -i -pe 's/^#\s*(req_extensions\s)/$1/m' /etc/ssl/vagrant-ss-openssl.cnf;
 perl -i -pe 's/^#\s*(copy_extensions\s)/$1/m' /etc/ssl/vagrant-ss-openssl.cnf;
 perl -i -pe 's/^(\[\s*v3_req\s*\])$/$1\nsubjectAltName=\$ENV::OPENSSL_CSR_ALTNAMES/m' /etc/ssl/vagrant-ss-openssl.cnf;
 
-# To recreate the root CA that we use to sign each of these certificates.
-# openssl genrsa 2048 > /vagrant/assets/ssl/ca.vm.key; # This generates the private key.
-# openssl req -new -x509 -nodes -days 30000 -key /vagrant/assets/ssl/ca.vm.key > /vagrant/assets/ssl/ca.vm.crt;
-
-openssl req -newkey rsa:2048 -nodes -days 30000 -utf8 \
+openssl req \
+  -nodes \
+  -days 30000 \
+  -newkey rsa:2048 \
+  -extensions v3_req \
+  -config /etc/ssl/vagrant-ss-openssl.cnf \
   -subj /"$(echo -n "$SSL_CSR_INFO" | trim | tr '\n' '/')" \
-  -keyout /etc/vagrant/ssl/.key -out /etc/vagrant/ssl/.csr \
-  -config /etc/ssl/vagrant-ss-openssl.cnf -extensions v3_req;
+  -keyout /etc/vagrant/ssl/server.key \
+  -out /etc/vagrant/ssl/server.csr;
 
-openssl x509 -req -days 30000 \
-  -in /etc/vagrant/ssl/.csr -out /etc/vagrant/ssl/.crt \
-  -extfile /etc/ssl/vagrant-ss-openssl.cnf -extensions v3_req \
-  -CA /vagrant/assets/ssl/ca.vm.crt -CAkey /vagrant/assets/ssl/ca.vm.key -set_serial 01;
+openssl x509 \
+  -req \
+  -days 30000 \
+  -set_serial 01 \
+  -extensions v3_req \
+  -in /etc/vagrant/ssl/server.csr \
+  -CA /vagrant/assets/ssl/ca.vm.crt \
+  -CAkey /vagrant/assets/ssl/ca.vm.key \
+  -extfile /etc/ssl/vagrant-ss-openssl.cnf \
+  -out /etc/vagrant/ssl/server.crt;
+
+openssl req \
+  -nodes \
+  -days 30000 \
+  -newkey rsa:2048 \
+  -subj '/C=US/ST=x/L=x/O=x/OU=x/CN=client.vm/emailAddress=x' \
+  -keyout /etc/vagrant/ssl/client.key \
+  -out /etc/vagrant/ssl/client.csr;
+
+openssl x509 \
+  -req \
+  -days 30000 \
+  -set_serial 01 \
+  -in /etc/vagrant/ssl/client.csr \
+  -CA /vagrant/assets/ssl/ca.vm.crt \
+  -CAkey /vagrant/assets/ssl/ca.vm.key \
+  -out /etc/vagrant/ssl/client.crt;
 
 # Generate user/pass for web-based tools.
 
@@ -173,8 +203,11 @@ ln --symbolic /vagrant/assets/mysql/.cnf /etc/mysql/conf.d/z90.cnf;
 
 mysql_install_db; # Install database tables.
 
-mysql --password="$MYSQL_DB_PASSWORD" --execute="GRANT ALL ON *.* TO '$MYSQL_DB_USER'@'$MYSQL_DB_HOST' IDENTIFIED BY '$MYSQL_DB_PASSWORD' REQUIRE SSL;";
-mysql --password="$MYSQL_DB_PASSWORD" --execute="CREATE DATABASE \`$MYSQL_DB_NAME\` CHARACTER SET 'utf8' COLLATE 'utf8mb4_unicode_ci';";
+mysql --password="$MYSQL_DB_PASSWORD" --execute="GRANT ALL ON *.* TO '$MYSQL_DB_USER'@'localhost' IDENTIFIED BY '$MYSQL_DB_PASSWORD';";
+mysql --password="$MYSQL_DB_PASSWORD" --execute="GRANT ALL ON *.* TO '$MYSQL_DB_USER'@'$MYSQL_DB_HOST' IDENTIFIED BY '$MYSQL_DB_PASSWORD';";
+mysql --password="$MYSQL_DB_PASSWORD" --execute="GRANT ALL ON *.* TO '$MYSQL_DB_USER'@'%' IDENTIFIED BY '$MYSQL_DB_PASSWORD' REQUIRE SSL;";
+
+mysql --password="$MYSQL_DB_PASSWORD" --execute="CREATE DATABASE \`$MYSQL_DB_NAME\` CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci';";
 
 mysql --password="$MYSQL_DB_PASSWORD" --execute="DELETE FROM \`mysql\`.\`user\` WHERE \`User\` = '';";
 mysql --password="$MYSQL_DB_PASSWORD" --execute="DELETE FROM \`mysql\`.\`user\` WHERE \`User\` = 'root' AND \`Host\` NOT IN ('localhost', '127.0.0.1', '::1');";
@@ -213,6 +246,7 @@ mv /etc/php5/fpm/pool.d/www.conf /etc/php5/fpm/pool.d/www.conf~;
 
 echo '[www]' >> /etc/php5/fpm/pool.d/env.conf;
 echo "env[MYSQL_DB_HOST] = '$MYSQL_DB_HOST'" >> /etc/php5/fpm/pool.d/env.conf;
+echo "env[MYSQL_DB_PORT] = '$MYSQL_DB_PORT'" >> /etc/php5/fpm/pool.d/env.conf;
 echo "env[MYSQL_DB_NAME] = '$MYSQL_DB_NAME'" >> /etc/php5/fpm/pool.d/env.conf;
 echo "env[MYSQL_DB_USER] = '$MYSQL_DB_USER'" >> /etc/php5/fpm/pool.d/env.conf;
 echo "env[MYSQL_DB_PASSWORD] = '$MYSQL_DB_PASSWORD'" >> /etc/php5/fpm/pool.d/env.conf;
