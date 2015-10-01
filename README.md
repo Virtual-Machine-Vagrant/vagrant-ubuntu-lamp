@@ -89,7 +89,7 @@ $ cd ~/VMs/my.vm
 $ vagrant destroy # Might take a sec.
 ```
 
-In the project directory you'll find `bootstrap.bash`, `bootstrap-wordpress.bash`, etc. Each of these scripts are run as the `root` user during `vagrant up`. Thus, you can install software and configure anything you like in these scripts. At the top of `bootstrap.bash` there are some configurable parameters that you can tune-in if you like. You may also want to tweak the `Vagrantfile` for the project.
+In the project directory you'll find `bootstrap`, `bootstrap-wp`, etc. Each of these scripts are run as the `root` user during `vagrant up`. Thus, you can install software and configure anything you like in these scripts. At the top of `bootstrap` there are some configurable parameters that you can tune-in if you like. You may also want to tweak the `Vagrantfile` for the project.
 
 ```bash
 $ vagrant up # Bring it back up.
@@ -117,7 +117,7 @@ In either case, the domain name is also wildcarded; i.e., `my.vm`, `www.my.vm`, 
 ### Testing WordPress Themes/Plugins Easily!
 
 See `/Vagrantfile` where you will find this section already implemented.
-_~ See also: `/bootstrap-wordpress.bash`_
+_~ See also: `/bootstrap-wp`_
 
 ```ruby
 if File.directory? File.expand_path('~/projects/wordpress')
@@ -135,9 +135,9 @@ end
 
 The `Vagrantfile` is automatically mounting drives on your VM that are sourced by your local `~/projects` directory (if you have one). Thus, if you have your WordPress themes/plugins in `~/projects/wordpress` (i.e., in your local filesystem), it will be mounted on the VM automatically, as `/vagrant-wordpress`.
 
-In the `bootstrap-wordpress.bash` file, we iterate `/vagrant-wordpress` and build symlinks for each of your themes/plugins automatically. This means that when you log into your WordPress Dashboard (<http://my.vm/wp-admin/>), you will have all of your themes/plugins available for testing. If you make edits locally in your favorite editor, they are updated in real-time on the VM. Very cool!
+In the `bootstrap-wp` file, we iterate `/vagrant-wordpress` and build symlinks for each of your themes/plugins automatically. This means that when you log into your WordPress Dashboard (<http://my.vm/wp-admin/>), you will have all of your themes/plugins available for testing. If you make edits locally in your favorite editor, they are updated in real-time on the VM. Very cool!
 
-The additional mounts (i.e., `~/projects/jaswsinc/wordpress` and `~/projects/websharks/wordpress`) are simply alternate locations that I use personally. Remove them if you like. See: `Vagrantfile` and `bootstrap-wordpress.bash` to remove in both places. You don't really _need_ to remove them though, because if these locations don't exist on your system they simply will not be mounted. In fact, you might consider leaving them, and just alter the paths to reflect your own personal preference—or for future implementation.
+The additional mounts (i.e., `~/projects/jaswsinc/wordpress` and `~/projects/websharks/wordpress`) are simply alternate locations that I use personally. Remove them if you like. See: `Vagrantfile` and `bootstrap-wp` to remove in both places. You don't really _need_ to remove them though, because if these locations don't exist on your system they simply will not be mounted. In fact, you might consider leaving them, and just alter the paths to reflect your own personal preference—or for future implementation.
 
 #### The default WordPress mapping looks like this:
 
