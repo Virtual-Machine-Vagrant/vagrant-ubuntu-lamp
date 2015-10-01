@@ -76,7 +76,7 @@ Available Tools (Using Any of These is Optional):
 
 - <https://my.vm/tools/pma> PhpMyAdmin  
   DB name: `vagrant`, DB username: `vagrant`, DB password: `vagrant`
-- <https://my.vm/tools/opcache> PHP OPCache extension status dump.
+- <https://my.vm/tools/opcache.php> PHP OPCache extension status dump.
 - <https://my.vm/tools/info.php> PHP info (i.e., `phpinfo()`) page.
 - <https://my.vm/tools/fpm-status.php> PHP-FPM status page.
 - <https://my.vm/tools/apache-status/> Apache status page.
