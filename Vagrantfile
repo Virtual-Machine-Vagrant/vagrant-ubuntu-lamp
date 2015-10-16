@@ -29,7 +29,7 @@ Vagrant.configure(2) do |config|
   if Vagrant.has_plugin?('landrush')
     config.landrush.enabled = true # Enable landrush plugin.
     config.landrush.tld = 'vm' # Set landrush TLD for this VM.
-    # Note: this results in `.vm` being stripped from `config.vm.hostname`.
+    config.landrush.upstream '8.8.8.8' # Google public DNS.
   end
 
   # Configure box-specific caching.
