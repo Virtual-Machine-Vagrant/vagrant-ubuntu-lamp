@@ -61,6 +61,11 @@ apt-get update; # May take a moment.
 
 # Install utilities.
 
+apt-get install cmake --yes;
+apt-get install autoconf --yes;
+apt-get install pkg-config --yes;
+apt-get install build-essential --yes;
+
 apt-get install git --yes;
 apt-get install zip unzip --yes;
 apt-get install apache2-utils --yes;
