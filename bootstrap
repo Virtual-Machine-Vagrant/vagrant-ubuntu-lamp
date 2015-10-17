@@ -69,6 +69,7 @@ apt-get install build-essential --yes;
 apt-get install git --yes;
 apt-get install zip unzip --yes;
 apt-get install apache2-utils --yes;
+apt-get install libssl-dev --yes;
 
 # Configure server timezone.
 
