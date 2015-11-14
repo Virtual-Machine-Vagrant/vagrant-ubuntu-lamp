@@ -23,7 +23,7 @@ L=$HOST_NAME
 O=$HOST_NAME
 OU=$HOST_NAME
 CN=$HOST_NAME
-emailAddress=vagrant@$HOST_NAME
+emailAddress=hostmaster@$HOST_NAME
 ";
 SSL_CSR_ALTNAMES="
 DNS:$HOST_NAME
@@ -34,13 +34,13 @@ DNS:*.$HOST_NAME
 # ---------- Functions ------------------------
 # ---------------------------------------------
 
-. /vagrant/assets/bash/funcs;
+. /bootstrap/assets/bash/funcs;
 
 # ---------------------------------------------
 # ---------- Check Setup State ----------------
 # ---------------------------------------------
 
-if [[ -f /etc/vagrant/.bootstrap-complete ]]; then
+if [[ -f /etc/bootstrap/.bootstrap-complete ]]; then
 
 	service mysql restart;
 	service php5-fpm restart;
@@ -51,8 +51,12 @@ if [[ -f /etc/vagrant/.bootstrap-complete ]]; then
 fi; # End conditional check.
 
 # ---------------------------------------------
-# ---------- Run Setup Routines ---------------
+# ---------- Setup Routines -------------------
 # ---------------------------------------------
+
+# Create directories.
+
+mkdir --parents /etc/bootstrap;
 
 # Update package repositories.
 
@@ -88,61 +92,68 @@ echo "TOOLS_PMA_BLOWFISH_KEY='$TOOLS_PMA_BLOWFISH_KEY'" >> /etc/environment;
 # Generate SSL certificates.
 
 # To recreate the root CA key/crt files.
-# openssl genrsa 2048 > /vagrant/assets/ssl/ca.vm.key; # Private key.
+# openssl genrsa 2048 > /bootstrap/assets/ssl/ca.vm.key; # Private key.
 # openssl req -new -x509 -nodes -days 30000 -key ca.vm.key > ca.vm.crt;
 
-mkdir --parents /etc/vagrant/ssl;
+mkdir --parents /etc/bootstrap/ssl;
 
 export OPENSSL_CSR_ALTNAMES; # Needed by config file.
 OPENSSL_CSR_ALTNAMES="$(echo -n "$SSL_CSR_ALTNAMES" | trim | tr '\n' ',')";
 
-cp /etc/ssl/openssl.cnf /etc/ssl/vagrant-ss-openssl.cnf;
-perl -i -pe 's/^#\s*(req_extensions\s)/$1/m' /etc/ssl/vagrant-ss-openssl.cnf;
-perl -i -pe 's/^#\s*(copy_extensions\s)/$1/m' /etc/ssl/vagrant-ss-openssl.cnf;
-perl -i -pe 's/^(\[\s*v3_req\s*\])$/$1\nsubjectAltName=\$ENV::OPENSSL_CSR_ALTNAMES/m' /etc/ssl/vagrant-ss-openssl.cnf;
+cp /etc/ssl/openssl.cnf /etc/ssl/bootstrap-openssl.cnf;
+perl -i -pe 's/^#\s*(req_extensions\s)/$1/m' /etc/ssl/bootstrap-openssl.cnf;
+perl -i -pe 's/^#\s*(copy_extensions\s)/$1/m' /etc/ssl/bootstrap-openssl.cnf;
+perl -i -pe 's/^(\[\s*v3_req\s*\])$/$1\nsubjectAltName=\$ENV::OPENSSL_CSR_ALTNAMES/m' /etc/ssl/bootstrap-openssl.cnf;
 
 openssl req \
   -nodes \
   -days 30000 \
   -newkey rsa:2048 \
   -extensions v3_req \
-  -config /etc/ssl/vagrant-ss-openssl.cnf \
+  -config /etc/ssl/bootstrap-openssl.cnf \
   -subj /"$(echo -n "$SSL_CSR_INFO" | trim | tr '\n' '/')" \
-  -keyout /etc/vagrant/ssl/server.key \
-  -out /etc/vagrant/ssl/server.csr;
+  -keyout /etc/bootstrap/ssl/server.key \
+  -out /etc/bootstrap/ssl/server.csr;
 
 openssl x509 \
   -req \
   -days 30000 \
   -set_serial 01 \
   -extensions v3_req \
-  -in /etc/vagrant/ssl/server.csr \
-  -CA /vagrant/assets/ssl/ca.vm.crt \
-  -CAkey /vagrant/assets/ssl/ca.vm.key \
-  -extfile /etc/ssl/vagrant-ss-openssl.cnf \
-  -out /etc/vagrant/ssl/server.crt;
+  -in /etc/bootstrap/ssl/server.csr \
+  -CA /bootstrap/assets/ssl/ca.vm.crt \
+  -CAkey /bootstrap/assets/ssl/ca.vm.key \
+  -extfile /etc/ssl/bootstrap-openssl.cnf \
+  -out /etc/bootstrap/ssl/server.crt;
 
 openssl req \
   -nodes \
   -days 30000 \
   -newkey rsa:2048 \
   -subj '/C=US/ST=x/L=x/O=x/OU=x/CN=client.vm/emailAddress=x' \
-  -keyout /etc/vagrant/ssl/client.key \
-  -out /etc/vagrant/ssl/client.csr;
+  -keyout /etc/bootstrap/ssl/client.key \
+  -out /etc/bootstrap/ssl/client.csr;
 
 openssl x509 \
   -req \
   -days 30000 \
   -set_serial 01 \
-  -in /etc/vagrant/ssl/client.csr \
-  -CA /vagrant/assets/ssl/ca.vm.crt \
-  -CAkey /vagrant/assets/ssl/ca.vm.key \
-  -out /etc/vagrant/ssl/client.crt;
+  -in /etc/bootstrap/ssl/client.csr \
+  -CA /bootstrap/assets/ssl/ca.vm.crt \
+  -CAkey /bootstrap/assets/ssl/ca.vm.key \
+  -out /etc/bootstrap/ssl/client.crt;
+
+openssl dhparam -out /etc/bootstrap/ssl/dhparam.crt 2048;
+
+if [[ ! -f /bootstrap/assets/ssl/official.key || ! -f /bootstrap/assets/ssl/official.crt ]]; then
+  ln --symbolic /etc/bootstrap/ssl/server.key /bootstrap/assets/ssl/official.key;
+  ln --symbolic /etc/bootstrap/ssl/server.crt /bootstrap/assets/ssl/official.crt;
+fi;
 
 # Generate user/pass for web-based tools.
 
-mkdir --parents /etc/vagrant/passwds;
-htpasswd -cb /etc/vagrant/passwds/.tools "$TOOLS_USER" "$TOOLS_PASSWORD";
+mkdir --parents /etc/bootstrap/passwds;
+htpasswd -cb /etc/bootstrap/passwds/.tools "$TOOLS_USER" "$TOOLS_PASSWORD";
 
 # Install Apache web server.
 
@@ -192,9 +203,9 @@ a2enmod status;
 
 a2enmod access_compat;
 
-mkdir --parents /var/vagrant/cgi-bin;
+#mkdir --parents /var/bootstrap/cgi-bin;
 echo 'export HOST_NAME="'"$HOST_NAME"'"' >> /etc/apache2/envvars;
-ln --symbolic /vagrant/assets/apache/.conf /etc/apache2/conf-enabled/z90.conf;
+ln --symbolic /bootstrap/assets/apache/.conf /etc/apache2/conf-enabled/z90.conf;
 sed --in-place 's/^\s*SSLProtocol all\s*$/SSLProtocol all -SSLv2 -SSLv3/I' /etc/apache2/mods-enabled/ssl.conf;
 
 # Install MySQL database server.
@@ -205,7 +216,7 @@ echo 'mysql-server mysql-server/root_password password '"$MYSQL_DB_PASSWORD" | d
   && echo 'mysql-server mysql-server/root_password_again password '"$MYSQL_DB_PASSWORD" | debconf-set-selections \
   && apt-get install mysql-server --yes;
 
-ln --symbolic /vagrant/assets/mysql/.cnf /etc/mysql/conf.d/z90.cnf;
+ln --symbolic /bootstrap/assets/mysql/.cnf /etc/mysql/conf.d/z90.cnf;
 
 mysql_install_db; # Install database tables.
 
@@ -224,8 +235,8 @@ mysql --password="$MYSQL_DB_PASSWORD" --execute="FLUSH PRIVILEGES;";
 # Install phpMyAdmin for MySQL adminstration.
 
 git clone https://github.com/phpmyadmin/phpmyadmin /usr/local/src/pma --branch=STABLE --depth=1;
-ln --symbolic /vagrant/assets/tools/.pma.php /usr/local/src/pma/config.inc.php;
-ln --symbolic /usr/local/src/pma /vagrant/assets/tools/pma;
+ln --symbolic /bootstrap/assets/tools/.pma.php /usr/local/src/pma/config.inc.php;
+ln --symbolic /usr/local/src/pma /bootstrap/assets/tools/pma;
 
 # Install PHP and PHP process manager.
 
@@ -245,9 +256,9 @@ echo 'extension=mcrypt.so' > /etc/php5/cli/conf.d/20-mcrypt.ini;
 echo 'extension=mcrypt.so' > /etc/php5/fpm/conf.d/20-mcrypt.ini;
 
 mkdir --parents --mode=777 /var/log/php;
-ln --symbolic /vagrant/assets/php/.ini /etc/php5/cli/conf.d/z90.ini;
-ln --symbolic /vagrant/assets/php/.ini /etc/php5/fpm/conf.d/z90.ini;
-ln --symbolic /vagrant/assets/php/fpm/.conf /etc/php5/fpm/pool.d/z90.conf;
+ln --symbolic /bootstrap/assets/php/.ini /etc/php5/cli/conf.d/z90.ini;
+ln --symbolic /bootstrap/assets/php/.ini /etc/php5/fpm/conf.d/z90.ini;
+ln --symbolic /bootstrap/assets/php/fpm/.conf /etc/php5/fpm/pool.d/z90.conf;
 mv /etc/php5/fpm/pool.d/www.conf /etc/php5/fpm/pool.d/www.conf~;
 
 echo '[www]' >> /etc/php5/fpm/pool.d/env.conf;
@@ -272,5 +283,4 @@ service apache2 restart;
 
 # Mark setup as being complete.
 
-mkdir --parents /etc/vagrant;
-touch /etc/vagrant/.bootstrap-complete;
+touch /etc/bootstrap/.bootstrap-complete;

@@ -7,22 +7,26 @@ Vagrant.configure(2) do |config|
     config.vm.hostname = File.basename(File.dirname(File.expand_path(__FILE__)));
   end
 
-  # Mount a special `/vagrant-htdocs` directory that will be owned by `www-data`.
-  config.vm.synced_folder 'htdocs/', '/vagrant-htdocs', owner: 'www-data', group: 'www-data'
+  # Mount `/vagrant` as `/bootstrap`.
+  config.vm.synced_folder '.', '/bootstrap'
+  config.vm.synced_folder '.', '/vagrant', disabled: true
+
+  # Mount a special `/htdocs` directory that will be owned by `www-data`.
+  config.vm.synced_folder 'htdocs/', '/htdocs', owner: 'www-data', group: 'www-data'
 
   # Mount WordPress project directory.
   if File.directory? File.expand_path('~/projects/wordpress')
-    config.vm.synced_folder File.expand_path('~/projects/wordpress'), '/vagrant-wordpress'
+    config.vm.synced_folder File.expand_path('~/projects/wordpress'), '/wordpress'
   end
 
   # Mount WordPress project directory.
   if File.directory? File.expand_path('~/projects/jaswsinc/wordpress')
-    config.vm.synced_folder File.expand_path('~/projects/jaswsinc/wordpress'), '/vagrant-jaswsinc-wordpress'
+    config.vm.synced_folder File.expand_path('~/projects/jaswsinc/wordpress'), '/jaswsinc-wordpress'
   end
 
   # Mount WordPress project directory.
   if File.directory? File.expand_path('~/projects/websharks/wordpress')
-    config.vm.synced_folder File.expand_path('~/projects/websharks/wordpress'), '/vagrant-websharks-wordpress'
+    config.vm.synced_folder File.expand_path('~/projects/websharks/wordpress'), '/websharks-wordpress'
   end
 
   # Configure DNS automaticaly?
@@ -38,10 +42,10 @@ Vagrant.configure(2) do |config|
   end
 
   # Configure resource allocations.
-  config.vm.provider "virtualbox" do |vb|
-    vb.customize ["modifyvm", :id, "--memory", "2048"]
-    vb.customize ["modifyvm", :id, "--vram", "256"]
-    vb.customize ["modifyvm", :id, "--cpus", "2"]
+  config.vm.provider 'virtualbox' do |vb|
+    vb.customize ['modifyvm', :id, '--memory', '1024']
+    vb.customize ['modifyvm', :id, '--vram', '128']
+    vb.customize ['modifyvm', :id, '--cpus', '1']
   end
 
   # Run script(s) as part of the provisioning process.

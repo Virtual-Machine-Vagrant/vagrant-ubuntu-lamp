@@ -9,9 +9,9 @@
 [client]
 
 # SSL CONFIG #
-ssl_key                        = /etc/vagrant/ssl/client.key
-ssl_cert                       = /etc/vagrant/ssl/client.crt
-ssl_ca                         = /vagrant/assets/ssl/ca.vm.crt
+ssl_key                        = /etc/bootstrap/ssl/client.key
+ssl_cert                       = /etc/bootstrap/ssl/client.crt
+ssl_ca                         = /bootstrap/assets/ssl/ca.vm.crt
 ssl_cipher                     = CAMELLIA256-SHA
 
 # GENERAL #
@@ -20,9 +20,9 @@ default_character_set          = utf8mb4
 [mysqld]
 
 # SSL CONFIG #
-ssl_key                        = /etc/vagrant/ssl/server.key
-ssl_cert                       = /etc/vagrant/ssl/server.crt
-ssl_ca                         = /vagrant/assets/ssl/ca.vm.crt
+ssl_key                        = /etc/bootstrap/ssl/server.key
+ssl_cert                       = /etc/bootstrap/ssl/server.crt
+ssl_ca                         = /bootstrap/assets/ssl/ca.vm.crt
 ssl_cipher                     = CAMELLIA256-SHA
 
 # GENERAL #
