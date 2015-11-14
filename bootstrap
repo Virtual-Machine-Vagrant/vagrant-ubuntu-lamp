@@ -203,7 +203,7 @@ a2enmod status;
 
 a2enmod access_compat;
 
-#mkdir --parents /var/bootstrap/cgi-bin;
+mkdir --parents /var/bootstrap/cgi-bin;
 echo 'export HOST_NAME="'"$HOST_NAME"'"' >> /etc/apache2/envvars;
 ln --symbolic /bootstrap/assets/apache/.conf /etc/apache2/conf-enabled/z90.conf;
 sed --in-place 's/^\s*SSLProtocol all\s*$/SSLProtocol all -SSLv2 -SSLv3/I' /etc/apache2/mods-enabled/ssl.conf;
