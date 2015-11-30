@@ -11,8 +11,8 @@ Vagrant.configure(2) do |config|
   config.vm.synced_folder '.', '/bootstrap'
   config.vm.synced_folder '.', '/vagrant', disabled: true
 
-  # Mount a special `/htdocs` directory that will be owned by `www-data`.
-  config.vm.synced_folder 'htdocs/', '/htdocs', owner: 'www-data', group: 'www-data'
+  # Mount a special `/app` directory that will be owned by `www-data`.
+  config.vm.synced_folder 'app/', '/app', owner: 'www-data', group: 'www-data'
 
   # Mount WordPress project directory.
   if File.directory? File.expand_path('~/projects/wordpress')

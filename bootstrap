@@ -65,6 +65,7 @@ apt-get update; # May take a moment.
 
 # Install utilities.
 
+apt-get install g++ --yes;
 apt-get install cmake --yes;
 apt-get install autoconf --yes;
 apt-get install pkg-config --yes;
@@ -232,7 +233,7 @@ mysql --password="$MYSQL_DB_PASSWORD" --execute="DROP DATABASE IF EXISTS \`test\
 
 mysql --password="$MYSQL_DB_PASSWORD" --execute="FLUSH PRIVILEGES;";
 
-# Install phpMyAdmin for MySQL adminstration.
+# Install phpMyAdmin for MySQL administration.
 
 git clone https://github.com/phpmyadmin/phpmyadmin /usr/local/src/pma --branch=STABLE --depth=1;
 ln --symbolic /bootstrap/assets/tools/.pma.php /usr/local/src/pma/config.inc.php;
