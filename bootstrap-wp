@@ -44,6 +44,8 @@ for wp_dir in  '/wordpress' \
 
 	if [[ -d "$wp_dir"/themes ]]; then
 		for dir in "$wp_dir"/themes/*; do
+			rm /app/src/wp-content/themes/"$(basename "$dir")";
+
 			if [[ -d "$dir"/"$(basename "$dir")" ]]; then
 				ln --symbolic --no-target-directory "$dir"/"$(basename "$dir")" /app/src/wp-content/themes/"$(basename "$dir")";
 			elif [[ -d "$dir" ]]; then # Not in a nested sub-directory; i.e., this is the theme directory?
@@ -55,6 +57,8 @@ for wp_dir in  '/wordpress' \
 
 	if [[ -d "$wp_dir"/plugins ]]; then
 		for dir in "$wp_dir"/plugins/*; do
+			rm /app/src/wp-content/plugins/"$(basename "$dir")";
+
 			if [[ -d "$dir"/"$(basename "$dir")" ]]; then
 				ln --symbolic --no-target-directory "$dir"/"$(basename "$dir")" /app/src/wp-content/plugins/"$(basename "$dir")";
 			elif [[ -d "$dir" ]]; then # Not in a nested sub-directory; i.e., this is the plugin directory?
