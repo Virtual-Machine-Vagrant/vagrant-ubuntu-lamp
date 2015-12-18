@@ -43,6 +43,7 @@ DNS:*.$HOST_NAME
 if [[ -f /etc/bootstrap/.bootstrap-complete ]]; then
 
 	service mysql restart;
+	service memcached restart;
 	service php5-fpm restart;
 	service apache2 restart;
 
@@ -239,7 +240,16 @@ git clone https://github.com/phpmyadmin/phpmyadmin /usr/local/src/pma --branch=S
 ln --symbolic /bootstrap/assets/tools/.pma.php /usr/local/src/pma/config.inc.php;
 ln --symbolic /usr/local/src/pma /bootstrap/assets/tools/pma;
 
-# Install PHP and PHP process manager.
+# Install Memcached for PHP and other software to use.
+
+apt-get install memcached --yes;
+
+rm --force /etc/memcached.conf; # Config RAM (50% in MB).
+RAM50="$(free -m | grep 'Mem:' | awk '{print int($2/2)}')";
+ln --symbolic /bootstrap/assets/mem/.conf /etc/memcached.conf;
+perl -i -pe 's/^\-m\s+[0-9]+[^\r\n]*/-m '"$RAM50"'/m' /bootstrap/assets/mem/.conf;
+
+# Install PHP and the PHP process manager.
 
 apt-get install php5-cli --yes;
 apt-get install php5-fpm --yes;
@@ -251,6 +261,7 @@ apt-get install php5-imagick --yes;
 apt-get install php5-json --yes;
 apt-get install php5-mysql --yes;
 apt-get install php5-intl --yes;
+apt-get install php5-memcached --yes;
 
 apt-get install php5-mcrypt --yes;
 echo 'extension=mcrypt.so' > /etc/php5/cli/conf.d/20-mcrypt.ini;
@@ -279,6 +290,7 @@ mount -a; # Mount the new partition.
 # Start/restart services.
 
 service mysql restart;
+service memcached restart;
 service php5-fpm restart;
 service apache2 restart;
 
